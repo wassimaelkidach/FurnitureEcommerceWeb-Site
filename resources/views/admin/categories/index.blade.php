@@ -6,11 +6,14 @@
     <div class="container">
         <h1>Gérer les catégories</h1>
 
+        <!-- Bouton d'ajout de catégorie -->
+        <a href="{{ route('admin.categories.create') }}" class="btn btn-success mb-3">+ Ajouter une catégorie</a>
+
         @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
-        <table>
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Nom</th>
@@ -26,14 +29,12 @@
                             @if($category->image)
                                 <img src="{{ asset('storage/' . $category->image) }}" alt="Image" width="50">
                             @else
-                                <p>No Image</p>
+                                <p>Aucune image</p>
                             @endif
                         </td>
                         <td>
-                            <!-- Bouton pour la modification -->
                             <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-info btn-sm">Modifier</a>
 
-                            <!-- Formulaire pour la suppression -->
                             <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
