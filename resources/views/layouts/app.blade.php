@@ -15,7 +15,6 @@
             <ul>
                 @guest
                     <li><a href="{{ route('login') }}">Se connecter</a></li>
-                    <li><a href="{{ route('register') }}">S'inscrire</a></li>
                 @else
                     <li><a href="{{ route('profil.show') }}">Mon profil</a></li>
                     <li><a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Se déconnecter</a></li>
