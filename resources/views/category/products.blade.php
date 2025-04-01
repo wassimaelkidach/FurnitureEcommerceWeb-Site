@@ -14,7 +14,15 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ $product->name }}</h5>
                             <p class="card-text">{{ Str::limit($product->description, 100) }}</p>
+                            <p class="card-text"><strong>{{ $product->price }} MAD</strong></p>
                             <a href="{{ route('product.show', $product->id) }}" class="btn btn-primary">Voir les détails</a>
+
+                            <!-- Formulaire pour ajouter le produit au panier -->
+                            <form action="{{ route('cart.store', $product->id) }}" method="POST" style="display: inline-block;">
+                                @csrf
+                                <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 80px; display: inline-block;">
+                                <button type="submit" class="btn btn-success">Ajouter au panier</button>
+                            </form>
                         </div>
                     </div>
                 </div>

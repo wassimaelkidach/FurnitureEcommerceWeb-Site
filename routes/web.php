@@ -93,3 +93,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 });
 
 Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+
+use App\Http\Controllers\CartController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add/{id}', [CartController::class, 'store'])->name('cart.store');
+    Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+    Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+});

@@ -14,7 +14,7 @@
         @endif
 
         <!-- Formulaire d'inscription -->
-        <form action="{{ route('register') }}" method="POST">
+        <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <!-- Champ nom -->
@@ -39,6 +39,24 @@
             <div>
                 <label for="password_confirmation">Confirmer le mot de passe</label>
                 <input type="password" name="password_confirmation" required>
+            </div>
+
+            <!-- Champ téléphone -->
+            <div>
+                <label for="phone">Numéro de téléphone</label>
+                <input type="text" name="phone" required>
+            </div>
+
+            <!-- Champ date de naissance -->
+            <div>
+                <label for="birthday">Date de naissance</label>
+                <input type="date" name="birthday" required>
+            </div>
+
+            <!-- Champ image -->
+            <div>
+                <label for="image">Image de profil</label>
+                <input type="file" name="image" accept="image/*">
             </div>
 
             <button type="submit">S'inscrire</button>
