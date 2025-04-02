@@ -154,20 +154,20 @@
         <nav>
             <h1 class="logo">dwira style</h1>
             <ul>
-                <li><a href="{{ route('home') }}">Accueil</a></li>
+                <li><a href="{{ route('home') }}">Home</a></li>
                 @guest
-                    <li><a href="{{ route('login') }}">Se connecter</a></li>
+                    <li><a href="{{ route('login') }}">Login</a></li>
                 @else
-                    <li><a href="{{ route('profil.show') }}">Mon profil</a></li>
+                    <li><a href="{{ route('profil.show') }}">My Profile</a></li>
                     <li><a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Se déconnecter</a></li>
                 @endguest
                 <li>
                     <a href="{{ route('cart.index') }}" class="cart-icon">
-                        <i class="fas fa-shopping-cart"></i> Panier
+                        <i class="fas fa-shopping-cart"></i> Cart
                         <span class="cart-badge">0</span>
                     </a>
                 </li>
-                <li><a href="#"><i class="fas fa-heart"></i> Favoris</a></li>
+                <li><a href="#"><i class="fas fa-heart"></i> Favorites</a></li>
             </ul>
             <form id="logout-form" action="{{ route('logout') }}" method="POST">
                 @csrf
