@@ -1,0 +1,249 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background-color: #f9f9f9;
+
+}
+
+.landing-page-section {
+    height: 90vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    background-image: url('/images/background.jpg');    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    background-attachment: scroll; 
+    color: white; 
+    overflow-y: auto; 
+}
+
+/* Classe hero */
+.hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 10px;
+    margin: 20px;
+    text-align: left;
+    margin-left: 70px;
+    max-width: 600px;
+}
+
+.hero h1 {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    font-weight: 1000;
+    line-height: 4rem;
+}
+
+.stats {
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+}
+
+.stat {
+    text-align: left;
+    font-size: 3rem;
+}
+
+.stat1 {
+    border-right: 3px solid rgb(255, 255, 255);
+    padding-right: 3rem;
+}
+
+.stat span {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.stat p {
+    font-size: 1rem;
+    margin: 5px 0 0;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+.input-search-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin-top: 20px;
+}
+
+.search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+}
+
+.input-search-container .search {
+    font-size: 16px;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border-radius: 12px;
+    border: none;
+    padding: 1.2rem 6rem 1.2rem 1.2rem;
+    font-family: 'Montserrat', sans-serif;    
+}
+
+.input-search-container .button-search {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #B3AC9D;
+    border: none;
+    border-radius: 12px;
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+/* Section des catégories */
+.categories-section {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.categories-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #333;
+    font-family: 'Montserrat', sans-serif;    
+}
+
+.categories-section p {
+    color: #666;
+    margin-bottom: 50px;
+    font-family: 'Montserrat', sans-serif;    
+}
+/* Conteneur des catégories */
+
+.categories {
+    display: flex;
+    flex-direction: row;
+    justify-content: center ;
+    gap: 30px; /* Espacement entre les catégories */
+    flex-wrap: wrap; /* Empêche les éléments de passer à la ligne */
+    padding: 0 20px; /* Ajoute un peu de marge intérieure */
+}
+
+/* Style de chaque catégorie */
+.category {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 300px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    flex: 0 0 auto;
+}
+
+/* Effet au survol */
+.category:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Style de l'image */
+.category img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+/* Style du titre */
+.category h5 {
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Style du bouton "Explore" */
+.categories-container .button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.categories-container button {
+  width: 110px;
+  height: 40px;
+  gap: 10px;
+  background-color: #A4947E;
+  border-radius: 30px;
+  color: rgb(19, 19, 19);
+  font-weight: 600;
+  border: none;
+  position: relative;
+  cursor: pointer;
+  transition-duration: .2s;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.116);
+  padding-left: 8px;
+  transition-duration: .5s;
+}
+
+.categories-container a {
+    text-decoration: none;
+    color: rgb(19, 19, 19);
+}
+
+.categories-container button:hover {
+    background-color: #8a7a66;
+    transition-duration: .5s;
+}
+
+.categories-container .svgIcon {
+    height: 25px;
+    transition-duration: 1.5s;
+}
+
+.categories-container button:hover .svgIcon {
+    transform: rotate(250deg);
+    transition-duration: 1.5s;
+}
+
+                /* Best Selling Section */
+
+.best-selling {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.best-selling h2 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #333;
+    font-family: 'Montserrat', sans-serif; 
+}
+
+
+
+
+
