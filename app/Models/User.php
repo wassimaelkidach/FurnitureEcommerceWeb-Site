@@ -18,7 +18,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 'email', 'password', 'birthday', 'phone', 'profile_image', 'role'
     ];
-
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+    
     public function isAdmin()
     {
         return $this->role === 'admin';

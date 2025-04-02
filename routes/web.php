@@ -9,6 +9,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminProductController;
+use App\Http\Controllers\ReviewController;
 
 //  Page d'accueil : Affichage de la page principale
 Route::get('/', function () {
@@ -89,4 +90,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Afficher les détails d'un produit spécifique (optionnel)
     Route::get('products/{product}', [AdminProductController::class, 'show'])->name('products.show');
+});
+
+Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+
+use App\Http\Controllers\CartController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add/{id}', [CartController::class, 'store'])->name('cart.store');
+    Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+    Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
 });
