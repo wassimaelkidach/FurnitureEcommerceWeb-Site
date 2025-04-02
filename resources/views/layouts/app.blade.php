@@ -182,7 +182,22 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2025 Dwira Style. Tous les droits sont réservés.</p>
+        <div class="footer-brand">
+            <h3 class="logo">dwira</h3>
+        </div>
+        <div class="footer-links">
+            <a href="#">Home</a>
+            <a href="#">Products</a>
+            <a href="#">Categories</a>
+            <a href="#">About us</a>
+            <a href="#">Contact Us</a>
+        </div>
+        <div class="footer-contact">
+            <p>+212 (06) 644121800</p> <br>
+            <p>&copy; 2025 Dwira Style. Tous les droits sont réservés.</p>
+
+        </div>
+        
     </footer>
 
     <script src="{{ asset('js/app.js') }}"></script>
