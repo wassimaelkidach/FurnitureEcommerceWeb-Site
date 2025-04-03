@@ -3,18 +3,20 @@
 @section('title', 'Gérer les catégories')
 
 @section('content')
-<div class="container-fluid py-4">
+<div class="container-fluid px-4">
+    <!-- En-tête -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+        <i class="fas fa-tag me-2"></i>Gestion des categories
+        </h1>
+        <a href="{{ route('admin.categories.create') }}" class="btn btn-primary shadow-sm">
+            <i class="fas fa-plus-circle me-1"></i> Nouveau categories
+        </a>
+    </div>
+<!-- <div class="card-header bg-white border-bottom-0 py-4"> -->
+           
     <div class="card shadow-lg">
-        <div class="card-header bg-white border-bottom-0 py-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <h2 class="mb-0">
-                    <i class="bi bi-tags me-2 text-primary"></i>Gestion des catégories
-                </h2>
-                <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle me-1"></i> Nouvelle catégorie
-                </a>
-            </div>
-        </div>
+        
 
         <div class="card-body px-0 pb-0">
             @if(session('success'))
