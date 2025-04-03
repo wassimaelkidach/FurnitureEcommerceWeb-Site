@@ -1,67 +1,101 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link href="{{ asset('css/auth.css') }}" rel="stylesheet">
 
-@section('content')
+</head>
+<body>
+    <div class="background-blur"></div>
     <div class="container">
-        <h1>Inscription</h1>
+        <div class="box form-box">
+            <header>Sign Up</header>
+            <!-- Affichage des erreurs de validation -->
 
-        <!-- Affichage des erreurs de validation -->
-        @if($errors->any())
-            <div style="color: red;">
-                @foreach($errors->all() as $error)
-                    <p>{{ $error }}</p>
-                @endforeach
-            </div>
-        @endif
+            @if($errors->any())
+                <div style="color: red;">
+                    @foreach($errors->all() as $error)
+                        <p>{{ $error }}</p>
+                    @endforeach
+                </div>
+            @endif
 
-        <!-- Formulaire d'inscription -->
-        <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
-            @csrf
+            <!-- Formulaire d'inscription -->
+            <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data" id="signupForm">
+                @csrf
 
-            <!-- Champ nom -->
-            <div>
-                <label for="name">Nom</label>
-                <input type="text" name="name" required>
-            </div>
+                <!-- Champ nom -->
+                <div class="field input">
+                    <input type="text" name="name" required id="Username" placeholder="username">
+                </div>
 
-            <!-- Champ email -->
-            <div>
-                <label for="email">Email</label>
-                <input type="email" name="email" required>
-            </div>
+                <!-- Champ email -->
+                <div class="field input">
+                    <input type="email" id="email" name="email" required placeholder="Email">
+                </div>
 
-            <!-- Champ mot de passe -->
-            <div>
-                <label for="password">Mot de passe</label>
-                <input type="password" name="password" required>
-            </div>
+                <!-- Champ mot de passe -->
+                <div class="field input">
+                    <div class="pass">
+                        <input type="password" name="password" required placeholder="Password" id="logPassword">
+                        <span class="password-toggle" onclick="togglePassword()">Show</span>
+                    </div>    
+                </div>
+            
+                <!-- Champ confirmation du mot de passe -->
+                <div class="field input">
+                    <div class="pass">
+                        <input type="password" name="password_confirmation" required placeholder="Confirm Password" id="logPassword">
+                        <span class="password-toggle" onclick="togglePassword()">Show</span>
+                    </div>
+                    
+                </div>
 
-            <!-- Champ confirmation du mot de passe -->
-            <div>
-                <label for="password_confirmation">Confirmer le mot de passe</label>
-                <input type="password" name="password_confirmation" required>
-            </div>
+                <!-- Champ téléphone -->
+                <div class="field input">
+                    <input type="text" name="phone" required placeholder="Phone number">
+                </div>
 
-            <!-- Champ téléphone -->
-            <div>
-                <label for="phone">Numéro de téléphone</label>
-                <input type="text" name="phone" required>
-            </div>
+                <!-- Champ date de naissance -->
+                <div class="field input">
+                    <label for="birthday">Birthday date</label>
+                    <input type="date" name="birthday" required>
+                </div>
 
-            <!-- Champ date de naissance -->
-            <div>
-                <label for="birthday">Date de naissance</label>
-                <input type="date" name="birthday" required>
-            </div>
+                <!-- Champ image -->
+                <div class="field input">
+                    <label for="image">profil picture</label>
+                    <input type="file" name="image" accept="image/*">
+                </div>
 
-            <!-- Champ image -->
-            <div>
-                <label for="image">Image de profil</label>
-                <input type="file" name="image" accept="image/*">
-            </div>
+                <div class="field">
+                    <button type="submit" class="btn">Sign up</button>
+                </div>
+            </form>
 
-            <button type="submit">S'inscrire</button>
-        </form>
-
-        <p>Vous avez déjà un compte ? <a href="{{ route('login') }}">Connectez-vous ici</a></p>
+            <p>Already a member? <a href="{{ route('login') }}" class="sign">Sign In here !</a></p>
+        </div>
     </div>
-@endsection
+
+    <script>
+
+        document.getElementById('logForm').addEventListener('submit', formSubmit);
+        function togglePassword() {
+            const passwordField = document.getElementById('logPassword');
+            const toggleText = document.querySelector('.password-toggle');
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleText.textContent = "Hide";
+            } else {
+                passwordField.type = "password";
+                toggleText.textContent = "Show";
+            }
+        }
+        
+    </script>
+</body>
+</html>
+

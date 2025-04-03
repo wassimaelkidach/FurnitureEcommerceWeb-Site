@@ -137,7 +137,7 @@ button:hover {
 }
 /* Conteneur des catégories */
 
-.categories {
+.categories-container{
     display: flex;
     flex-direction: row;
     justify-content: center ;
@@ -156,6 +156,7 @@ button:hover {
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     flex: 0 0 auto;
+    margin: 20px;
 }
 
 /* Effet au survol */
@@ -182,50 +183,40 @@ button:hover {
     letter-spacing: 1px;
 }
 
-/* Style du bouton "Explore" */
-.categories-container .button{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
+.card-body {
+    padding: 20px;
 }
 
-.categories-container button {
-  width: 110px;
+.card-body .btn{
+  text-decoration: none;
+  color: #333;
+  width: 140px;
   height: 40px;
-  gap: 10px;
-  background-color: #A4947E;
-  border-radius: 30px;
-  color: rgb(19, 19, 19);
-  font-weight: 600;
+  
+  justify-content: space-evenly;
   border: none;
   position: relative;
-  cursor: pointer;
-  transition-duration: .2s;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.116);
-  padding-left: 8px;
-  transition-duration: .5s;
+  background-color: transparent;
+  transition: .2s cubic-bezier(0.19, 1, 0.22, 1);
+  opacity: 0.6;
 }
-
-.categories-container a {
-    text-decoration: none;
-    color: rgb(19, 19, 19);
+  
+.card-body  .btn .icon {
+    transform: translateX(0%);
+    transition: .2s linear;
+    animation: attention 1.2s linear infinite;
 }
-
-.categories-container button:hover {
-    background-color: #8a7a66;
-    transition-duration: .5s;
+  
+@keyframes attention {
+    0% {
+      transform: translateX(0%);
+    }
+  
+    50% {
+      transform: translateX(30%);
+    }
 }
-
-.categories-container .svgIcon {
-    height: 25px;
-    transition-duration: 1.5s;
-}
-
-.categories-container button:hover .svgIcon {
-    transform: rotate(250deg);
-    transition-duration: 1.5s;
-}
+  
 
                 /* Best Selling Section */
 

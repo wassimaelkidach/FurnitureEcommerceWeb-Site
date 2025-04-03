@@ -159,7 +159,7 @@
                     <li><a href="{{ route('login') }}">Login</a></li>
                 @else
                     <li><a href="{{ route('profil.show') }}">My Profile</a></li>
-                    <li><a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Se déconnecter</a></li>
+                    <li><a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a></li>
                 @endguest
                 <li>
                     <a href="{{ route('cart.index') }}" class="cart-icon">
@@ -194,7 +194,7 @@
         </div>
         <div class="footer-contact">
             <p>+212 (06) 644121800</p> <br>
-            <p>&copy; 2025 Dwira Style. Tous les droits sont réservés.</p>
+            <p>&copy; 2025 Dwira Style. All rights are reserved</p>
 
         </div>
         
