@@ -286,16 +286,17 @@
     <!-- Menu utilisateur -->
     <div class="user-dropdown" id="userDropdown">
       <div class="user-trigger" id="userDropdownTrigger">
-        <img src="{{ Auth::user()->photo_url ?? asset('images/default-avatar.png') }}" 
-             alt="Admin Photo" class="user-avatar">
+      <img src="{{ Auth::user()->image ? asset('storage/' . Auth::user()->image) : asset('images/default-avatar.png') }}" 
+      alt="Admin Photo" class="user-avatar">
         <span class="user-name">{{ Auth::user()->name }}</span>
         <i class="fas fa-chevron-down dropdown-arrow"></i>
       </div>
       
       <div class="user-dropdown-menu" id="userDropdownMenu">
         <div class="dropdown-header">
-          <img src="{{ Auth::user()->photo_url ?? asset('images/default-avatar.png') }}" 
-               alt="Admin Photo" class="dropdown-avatar">
+        <!-- Solution temporaire pour debug -->
+<img src="{{ Auth::user()->image ? '/storage/images'.Auth::user()->image : '/images/default-avatar.png' }}" 
+     alt="Admin Photo" class="user-avatar">
           <div>
             <h4>{{ Auth::user()->name }}</h4>
             <small>{{ Auth::user()->email }}</small>
@@ -307,9 +308,9 @@
         <a href="{{ route('profil.show') }}" class="dropdown-item">
           <i class="fas fa-user-cog"></i> Mon profil
         </a>
-        <a href="#" class="dropdown-item">
+        <!-- <a href="#" class="dropdown-item">
           <i class="fas fa-cog"></i> Paramètres
-        </a>
+        </a> -->
         
         <div class="dropdown-divider"></div>
         
