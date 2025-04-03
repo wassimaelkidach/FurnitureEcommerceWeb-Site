@@ -136,7 +136,7 @@ button:hover {
 }
 /* Conteneur des catégories */
 
-.categories {
+.categories-container{
     display: flex;
     flex-direction: row;
     justify-content: center ;
@@ -144,13 +144,6 @@ button:hover {
     flex-wrap: wrap; /* Empêche les éléments de passer à la ligne */
     padding: 0 20px; /* Ajoute un peu de marge intérieure */
 }
-.category {
-    flex: 0 0 auto; /* Garde une taille fixe */
-    width: 300px;
-    display: inline-block; /* Assure une disposition en ligne */
-    vertical-align: top;
-}
-
 
 /* Style de chaque catégorie */
 .category {
@@ -162,6 +155,7 @@ button:hover {
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     flex: 0 0 auto;
+    margin: 20px;
 }
 
 /* Effet au survol */
@@ -188,103 +182,50 @@ button:hover {
     letter-spacing: 1px;
 }
 
-/* Style du bouton "Explore" */
-.categories-container .button{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
+.card-body {
+    padding: 20px;
 }
 
-.categories-container button {
-  width: 110px;
+.card-body .btn{
+  text-decoration: none;
+  color: #333;
+  width: 140px;
   height: 40px;
-  gap: 10px;
-  background-color: #A4947E;
-  border-radius: 30px;
-  color: rgb(19, 19, 19);
-  font-weight: 600;
+  
+  justify-content: space-evenly;
   border: none;
   position: relative;
-  cursor: pointer;
-  transition-duration: .2s;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.116);
-  padding-left: 8px;
-  transition-duration: .5s;
+  background-color: transparent;
+  transition: .2s cubic-bezier(0.19, 1, 0.22, 1);
+  opacity: 0.6;
 }
-
-.categories-container {
-    width: 100%;
-    overflow-x: auto; /* Active le défilement horizontal si besoin */
-    white-space: nowrap; /* Empêche les retours à la ligne */
-    padding-bottom: 10px;
+  
+.card-body  .btn .icon {
+    transform: translateX(0%);
+    transition: .2s linear;
+    animation: attention 1.2s linear infinite;
 }
-
-.categories {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    flex-wrap: nowrap; /* Empêche le retour à la ligne */
-    justify-content: flex-start;
-    align-items: center;
+  
+@keyframes attention {
+    0% {
+      transform: translateX(0%);
+    }
+  
+    50% {
+      transform: translateX(30%);
+    }
 }
-
+  
 
                 /* Best Selling Section */
 
-                .best-selling {
-                    text-align: center;
-                    padding: 3rem 1.5rem;
-                    font-family: 'Montserrat', sans-serif;
-                }
-                
-                .product-list {
-                    display: flex;
-                    flex-wrap: wrap; /* Permet aux éléments de se réorganiser sur plusieurs lignes */
-                    justify-content: space-between; /* Espace entre les éléments */
-                    gap: 20px; /* Espacement entre les produits */
-                }
-                
-                .product-item {
-                    width: calc(33.33% - 20px); /* Trois produits par ligne, moins l'espacement */
-                    box-sizing: border-box;
-                    background-color: #fff;
-                    border-radius: 10px;
-                    padding: 1rem;
-                    text-align: center;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                }
-                
-                .product-item img {
-                    width: 100%;
-                    height: 200px; /* Fixe la hauteur pour toutes les images */
-                    object-fit: cover; /* Assure que l'image couvre toute la zone sans être déformée */
-                    border-radius: 8px;
-                }
-                
-                
-                .product-item h3 {
-                    font-size: 1.2rem;
-                    margin: 10px 0;
-                }
-                
-                .product-item p {
-                    font-size: 1rem;
-                    color: #555;
-                }
-                
-                @media (max-width: 768px) {
-                    .product-item {
-                        width: calc(50% - 20px); /* 2 produits par ligne sur mobile */
-                    }
-                }
-                
-                @media (max-width: 480px) {
-                    .product-item {
-                        width: 100%; /* 1 produit par ligne sur les très petits écrans */
-                    }
-                }
-                
+.best-selling {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+}
+
 
 /*section de livraison*/
 
@@ -450,3 +391,5 @@ button:hover {
     font-size: 1.8rem;
     margin-bottom: 20px;
 }
+
+
