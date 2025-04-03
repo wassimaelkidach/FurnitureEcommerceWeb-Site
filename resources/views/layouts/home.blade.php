@@ -1,25 +1,36 @@
 @extends('layouts.app')
 
-@section('content')
-    <div class="container">
-        <h1>Catégories</h1>
+@section('title', 'Nos Catégories')
 
-        <div class="row">
-            @foreach($categories as $category)
-                <div class="col-md-4">
-                    <div class="card">
-                        @if($category->image)
-                        <img src="{{ asset('storage/' . $category->image) }}" class="card-img-top" alt="{{ $category->name }}">
-                        @else
-                            <img src="{{ asset('images/category-placeholder.jpg') }}" class="card-img-top" alt="{{ $category->name }}" style="width: 100%; height: 200px; object-fit: cover;">
-                        @endif
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $category->name }}</h5>
-                            <a href="{{ route('category.products', $category->id) }}" class="btn btn-primary">Voir les produits</a>
+@section('content')
+<div class="container py-5">
+    <h1 class="text-center mb-5">Nos Catégories de Produits</h1>
+
+    <div class="row g-4">
+        @foreach($categories as $category)
+        <div class="col-md-6 col-lg-4 col-xl-3">
+            <div class="card h-100 border-0 shadow-hover">
+                <div class="ratio ratio-4x3 bg-light">
+                    @if($category->image && Storage::exists('public/'.$category->image))
+                        <img src="{{ Storage::url($category->image) }}" 
+                             class="img-cover"
+                             alt="{{ $category->name }}">
+                    @else
+                        <div class="d-flex align-items-center justify-content-center text-muted">
+                            <i class="fas fa-image fa-4x opacity-25"></i>
                         </div>
-                    </div>
+                    @endif
                 </div>
-            @endforeach
+                <div class="card-body text-center">
+                    <h3 class="h5 card-title">{{ $category->name }}</h3>
+                    <a href="{{ route('category.products', $category->id) }}" 
+                       class="btn btn-primary stretched-link">
+                       <i class="fas fa-arrow-right me-2"></i>Voir les produits
+                    </a>
+                </div>
+            </div>
         </div>
+        @endforeach
     </div>
+</div>
 @endsection
