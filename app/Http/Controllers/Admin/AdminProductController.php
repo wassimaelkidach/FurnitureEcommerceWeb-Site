@@ -11,24 +11,20 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminProductController extends Controller
 {
-    // Afficher la liste des produits
     public function index()
     {
-        $products = Product::all();
+        $products = Product::with('category')->get();
         return view('admin.products.index', compact('products'));
     }
 
-    // Afficher le formulaire de création d'un produit
     public function create()
     {
-        $categories = Category::all(); // Charger les catégories pour le formulaire
+        $categories = Category::all();
         return view('admin.products.create', compact('categories'));
     }
 
-    // Enregistrer un nouveau produit
     public function store(Request $request)
     {
-        // Validation des données
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
@@ -36,13 +32,12 @@ class AdminProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'images' => 'nullable|array',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
-        // Gestion de l'image principale
+        // Main image
         $imagePath = $request->file('image')->store('products', 'public');
     
-        // Création du produit
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
@@ -51,105 +46,89 @@ class AdminProductController extends Controller
             'image' => $imagePath,
         ]);
     
-        // Gestion des autres images
+        // Additional images
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $imagePath = $image->store('product_images', 'public');  // Assure-toi de récupérer le chemin
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_path' => $imagePath,  // Insérer le chemin dans la colonne image_path
-                ]);
+                if ($image->isValid()) {
+                    $imagePath = $image->store('products/gallery', 'public');
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image_path' => $imagePath,
+                    ]);
+                }
             }
         }
     
-        return redirect()->route('admin.products.index')->with('success', 'Produit ajouté avec succès.');
+        return redirect()->route('admin.products.index')->with('success', 'Product added successfully.');
     }
-    
-    
 
-    // Afficher le formulaire de modification d'un produit
     public function edit($id)
     {
-        $product = Product::findOrFail($id);
-        $categories = Category::all(); // Charger les catégories pour le formulaire
+        $product = Product::with(['images', 'category'])->findOrFail($id);
+        $categories = Category::all();
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
-    // Mettre à jour un produit
-    public function update(Request $request, $id)
+    public function update(Request $request, Product $product)
     {
-        // Validation
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|numeric',
+            'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
-        $product = Product::findOrFail($id);
+        // Mise à jour des champs de base
+        $product->update($validated);
     
-        // Mise à jour de l'image principale
+        // Gestion de l'image principale
         if ($request->hasFile('image')) {
-            // Supprimer l'ancienne image
             if ($product->image) {
-                Storage::delete('public/' . $product->image);
+                Storage::disk('public')->delete($product->image);
             }
-            // Stocker la nouvelle image
-            $product->image = $request->file('image')->store('products', 'public');
+            $path = $request->file('image')->store('products', 'public');
+            $product->image = $path;
+            $product->save();
         }
     
-        // Mise à jour des données de base
-        $product->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'price' => $request->price,
-            'category_id' => $request->category_id,
-        ]);
-    
-        // Gestion des images supprimées
-        if ($request->deleted_images) {
-            $deletedImages = json_decode($request->deleted_images);
-            foreach ($deletedImages as $imageId) {
-                $image = ProductImage::find($imageId);
-                if ($image) {
-                    Storage::delete('public/' . $image->image_path);
-                    $image->delete();
-                }
-            }
-        }
-    
-        // Ajout des nouvelles images
+        // Gestion des images supplémentaires (remplacement complet)
         if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $imagePath = $image->store('product_images', 'public');
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_path' => $imagePath,
-                ]);
+            // Supprimer toutes les anciennes images
+            foreach ($product->images as $image) {
+                Storage::disk('public')->delete($image->image_path);
+                $image->delete();
+            }
+    
+            // Ajouter les nouvelles images
+            foreach ($request->file('images') as $file) {
+                $path = $file->store('products/gallery', 'public');
+                $product->images()->create(['image_path' => $path]);
             }
         }
     
-        return redirect()->route('admin.products.index')->with('success', 'Produit mis à jour avec succès.');
+        return redirect()->route('admin.products.index')
+                   ->with('success', 'Produit modifié avec succès');
     }
-    // Supprimer un produit
     public function destroy($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('images')->findOrFail($id);
         
-        // Supprimer les images associées au produit
+        // Delete additional images
         foreach ($product->images as $image) {
-            Storage::delete('public/' . $image->image);
+            Storage::disk('public')->delete($image->image_path);
             $image->delete();
         }
 
-        // Supprimer l'image principale
-        Storage::delete('public/' . $product->main_image);
+        // Delete main image
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
+        }
 
-        // Supprimer le produit
+        // Delete product
         $product->delete();
 
-        return redirect()->route('admin.products.index')->with('success', 'Produit supprimé avec succès.');
+        return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
     }
 }

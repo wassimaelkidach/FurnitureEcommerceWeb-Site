@@ -5,20 +5,29 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center border-bottom pb-3">
-                <h1 class="h3 mb-0">Édition du produit</h1>
+                <h1 class="h3 mb-0">Modifier le Produit</h1>
                 <!-- <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-1"></i> Retour
                 </a> -->
             </div>
-            <p class="text-muted mt-2">Mise à jour des informations produit</p>
+            <p class="text-muted mt-2">Mettre à jour les informations du produit</p>
         </div>
     </div>
+
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" id="product-edit-form">
         @csrf
         @method('PUT')
         
-        <!-- Champ caché pour les images supprimées -->
         <input type="hidden" name="deleted_images" id="deleted_images" value="">
         
         <div class="row g-4">
@@ -41,11 +50,23 @@
                         </div>
                         
                         <div class="mb-3">
+                            <label for="category_id" class="form-label">Catégorie</label>
+                            <select class="form-select" id="category_id" name="category_id" required>
+                                <option value="">Sélectionner une catégorie</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" {{ $product->category_id == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
                             <label for="price" class="form-label">Prix (MAD)</label>
                             <div class="input-group">
                                 <span class="input-group-text">MAD</span>
                                 <input type="number" class="form-control" id="price" name="price" 
-                                       value="{{ old('price', $product->price) }}" step="0.01" required>
+                                       value="{{ old('price', $product->price) }}" step="0.01" min="0" required>
                             </div>
                         </div>
                     </div>
@@ -90,24 +111,23 @@
                             <h6 class="fw-bold mb-3">Galerie d'images</h6>
                             
                             <div class="row g-2 mb-3" id="gallery-container">
-                                @forelse($product->images as $image)
-                                <div class="col-4 col-md-3 gallery-item" data-id="{{ $image->id }}">
-                                    <div class="position-relative border rounded p-1 bg-light">
-                                        <img src="{{ asset('storage/' . $image->image_path) }}" 
-                                             class="img-fluid rounded" 
-                                             style="height: 100px; width: 100%; object-fit: cover;" 
-                                             alt="Image galerie">
-                                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 p-1 delete-image">
-                                            <i class="fas fa-times"></i>
-                                        </button>
+                                @if($product->images->isEmpty())
+                                    <div class="col-12 text-center text-muted py-3" id="no-gallery-message">
+                                        <i class="fas fa-images fa-2x mb-2"></i>
+                                        <p class="mb-0">Aucune image supplémentaire</p>
                                     </div>
-                                </div>
-                                @empty
-                                <div class="col-12 text-center text-muted py-3" id="no-gallery-message">
-                                    <i class="fas fa-images fa-2x mb-2"></i>
-                                    <p class="mb-0">Aucune image supplémentaire</p>
-                                </div>
-                                @endforelse
+                                @else
+                                    @foreach($product->images as $image)
+                                    <div class="col-4 col-md-3 gallery-item">
+                                        <div class="position-relative border rounded p-1 bg-light">
+                                            <img src="{{ asset('storage/' . $image->image_path) }}" 
+                                                 class="img-fluid rounded" 
+                                                 style="height: 100px; width: 100%; object-fit: cover;" 
+                                                 alt="Image galerie">
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                @endif
                             </div>
                             
                             <div class="file-upload-wrapper">
@@ -141,33 +161,9 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
-    // Tableau pour stocker les IDs des images supprimées
-    let deletedImages = [];
-
-    // Gestion de la suppression des images
-    $(document).on('click', '.delete-image', function() {
-        const $item = $(this).closest('.gallery-item');
-        const imageId = $item.data('id');
-        
-        if(confirm('Supprimer cette image ?')) {
-            if(imageId) {
-                deletedImages.push(imageId);
-                $('#deleted_images').val(JSON.stringify(deletedImages));
-            }
-            $item.remove();
-            
-            // Si plus d'images, afficher le message
-            if($('#gallery-container .gallery-item').length === 0) {
-                $('#gallery-container').html(`
-                    <div class="col-12 text-center text-muted py-3" id="no-gallery-message">
-                        <i class="fas fa-images fa-2x mb-2"></i>
-                        <p class="mb-0">Aucune image supplémentaire</p>
-                    </div>
-                `);
-            }
-        }
-    });
-
+    // Tableau pour stocker les fichiers images sélectionnés
+    let selectedFiles = [];
+    
     // Prévisualisation de la nouvelle image principale
     $('#image').change(function() {
         const file = this.files[0];
@@ -187,50 +183,153 @@ $(document).ready(function() {
         }
     });
 
-    // Affichage du nombre de fichiers sélectionnés pour la galerie
+    // Gestion des images de la galerie
     $('#images').change(function() {
-        if (this.files.length > 0) {
-            $('#gallery-filename').text(`${this.files.length} fichier(s) sélectionné(s)`);
+        const files = Array.from(this.files);
+        selectedFiles = files;
+        
+        const galleryContainer = $('#gallery-container');
+        
+        if (files.length > 0) {
+            $('#gallery-filename').text(`${files.length} fichier(s) sélectionné(s)`);
+            galleryContainer.empty();
+            $('#no-gallery-message').remove();
+            
+            files.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    galleryContainer.append(`
+                        <div class="col-4 col-md-3 gallery-item">
+                            <div class="position-relative border rounded p-1 bg-light">
+                                <img src="${e.target.result}" class="img-fluid rounded" style="height: 100px; width: 100%; object-fit: cover;">
+                                <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 p-1 remove-image" data-index="${index}">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `);
+                };
+                reader.readAsDataURL(file);
+            });
         } else {
-            $('#gallery-filename').text('Ajouter des images');
+            resetGallery();
         }
     });
+
+    // Suppression des images dans la prévisualisation
+    $(document).on('click', '.remove-image', function() {
+        const index = $(this).data('index');
+        selectedFiles.splice(index, 1);
+        
+        const dataTransfer = new DataTransfer();
+        selectedFiles.forEach(file => dataTransfer.items.add(file));
+        $('#images')[0].files = dataTransfer.files;
+        
+        $(this).closest('.gallery-item').remove();
+        
+        if (selectedFiles.length === 0) {
+            resetGallery();
+        } else {
+            $('#gallery-filename').text(`${selectedFiles.length} fichier(s) sélectionné(s)`);
+        }
+    });
+
+    // Réinitialiser la galerie
+    function resetGallery() {
+        $('#gallery-container').empty();
+        $('#gallery-filename').text('');
+        
+        @if($product->images->isNotEmpty())
+            @foreach($product->images as $image)
+                $('#gallery-container').append(`
+                    <div class="col-4 col-md-3 gallery-item">
+                        <div class="position-relative border rounded p-1 bg-light">
+                            <img src="{{ asset('storage/' . $image->image_path) }}" class="img-fluid rounded" style="height: 100px; width: 100%; object-fit: cover;">
+                        </div>
+                    </div>
+                `);
+            @endforeach
+        @else
+            $('#gallery-container').html(`
+                <div class="col-12 text-center text-muted py-3" id="no-gallery-message">
+                    <i class="fas fa-images fa-2x mb-2"></i>
+                    <p class="mb-0">Aucune image supplémentaire</p>
+                </div>
+            `);
+        @endif
+    }
+
+    // Afficher une alerte stylisée
+    function showAlert(message, type = 'success') {
+        const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+            </div>
+        `;
+        
+        // Ajouter au début du conteneur principal
+        $('.container.py-5').prepend(alertHtml);
+        
+        // Fermer automatiquement après 5 secondes
+        setTimeout(() => {
+            $('.alert').alert('close');
+        }, 5000);
+    }
 
     // Soumission du formulaire
     $('#product-edit-form').on('submit', function(e) {
         e.preventDefault();
         
-        // Afficher un loader pendant la soumission
-        $('#submit-btn').html('<i class="fas fa-spinner fa-spin me-2"></i> Enregistrement...').prop('disabled', true);
+        const $submitBtn = $('#submit-btn');
+        $submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i> Enregistrement...').prop('disabled', true);
         
-        // Soumettre le formulaire via AJAX
+        const formData = new FormData(this);
+        
+        // Ajouter les images sélectionnées
+        if (selectedFiles.length > 0) {
+            formData.append('replace_gallery', 'true');
+            selectedFiles.forEach(file => formData.append('images[]', file));
+        }
+        
         $.ajax({
             url: $(this).attr('action'),
             method: 'POST',
-            data: new FormData(this),
+            data: formData,
             processData: false,
             contentType: false,
             success: function(response) {
-                // Rediriger vers la liste des produits avec un message de succès
-                window.location.href = "{{ route('admin.products.index') }}";
+                if (response.success) {
+                    showAlert(response.message, 'success');
+                    
+                    // Redirection après 1.5 secondes
+                    setTimeout(() => {
+                        window.location.href = response.redirect;
+                    }, 1500);
+                } else {
+                    showAlert(response.message, 'danger');
+                    $submitBtn.html('<i class="fas fa-save me-2"></i> Enregistrer').prop('disabled', false);
+                }
             },
             error: function(xhr) {
-                // Réactiver le bouton
-                $('#submit-btn').html('<i class="fas fa-save me-2"></i> Enregistrer').prop('disabled', false);
+                $submitBtn.html('<i class="fas fa-save me-2"></i> Enregistrer').prop('disabled', false);
                 
-                // Afficher les erreurs de validation
+                let errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
+                
                 if (xhr.status === 422) {
                     const errors = xhr.responseJSON.errors;
-                    let errorMessages = '';
+                    errorMessage = 'Erreurs de validation:<ul class="mb-0">';
                     
-                    $.each(errors, function(key, value) {
-                        errorMessages += `<li>${value[0]}</li>`;
+                    Object.values(errors).forEach(error => {
+                        errorMessage += `<li>${error[0]}</li>`;
                     });
                     
-                    alert(`Erreurs de validation:\n${errorMessages}`);
-                } else {
-                    alert('Une erreur est survenue. Veuillez réessayer.');
+                    errorMessage += '</ul>';
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
                 }
+                
+                showAlert(errorMessage, 'danger');
             }
         });
     });
