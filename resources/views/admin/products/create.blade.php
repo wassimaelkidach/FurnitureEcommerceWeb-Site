@@ -17,22 +17,27 @@
             </div>
         @endif
 
-        <!-- Formulaire d'ajout de produit -->
         <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
+
             <div class="form-group">
-                <label for="name">Nom du produit</label>
-                <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
+                <label for="name">Nom</label>
+                <input type="text" name="name" id="name" class="form-control" required>
             </div>
 
             <div class="form-group">
                 <label for="description">Description</label>
-                <textarea name="description" id="description" class="form-control" required>{{ old('description') }}</textarea>
+                <textarea name="description" id="description" class="form-control" required></textarea>
             </div>
 
             <div class="form-group">
                 <label for="price">Prix</label>
-                <input type="number" name="price" id="price" class="form-control" value="{{ old('price') }}" required>
+                <input type="number" name="price" id="price" class="form-control" required step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Quantité</label>
+                <input type="number" name="quantity" id="quantity" class="form-control" required min="1">
             </div>
 
             <div class="form-group">
@@ -45,19 +50,18 @@
                 </select>
             </div>
 
-            <!-- Champ pour l'image principale -->
             <div class="form-group">
-                <label for="image">Image principale du produit</label>
+                <label for="image">Image principale</label>
                 <input type="file" name="image" id="image" class="form-control" required>
             </div>
 
-            <!-- Champ pour les autres images -->
             <div class="form-group">
-                <label for="images">Autres images du produit</label>
+                <label for="images">Autres images</label>
                 <input type="file" name="images[]" id="images" class="form-control" multiple>
             </div>
 
-            <button type="submit" class="btn btn-primary">Ajouter le produit</button>
+            <!-- Bouton Ajouter produit -->
+            <button type="submit" class="btn btn-primary">Ajouter produit</button>
         </form>
     </div>
 @endsection

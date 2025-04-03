@@ -8,7 +8,15 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    // Afficher les produits associés à une catégorie
+    public function index()
+    {
+        // Récupérer tous les produits
+        $products = Product::all();
+
+        // Passer les produits à la vue
+        return view('product.index', compact('products'));
+    }
+    
     public function productsByCategory($id)
     {
         // Récupérer la catégorie

@@ -20,6 +20,10 @@
                 <input type="number" name="price" value="{{ $product->price }}" id="price" required>
             </div>
             <div>
+                <label for="quantity">quantite</label>
+                <input type="number" name="quantity" value="{{ $product->quantity }}" id="quantity" required>
+            </div>
+            <div>
                 <label for="main_image">Image principale</label>
                 <input type="file" name="main_image" id="main_image">
             </div>
@@ -27,6 +31,7 @@
                 <label for="images">Images supplémentaires</label>
                 <input type="file" name="images[]" id="images" multiple>
             </div>
+            
             <button type="submit">Mettre à jour le produit</button>
         </form>
     </div>

@@ -15,6 +15,7 @@
                         <th>Nom</th>
                         <th>Description</th>
                         <th>Prix</th>
+                        <th>Quantité</th> <!-- Nouvelle colonne pour la quantité -->
                         <th>Autres images</th>
                         <th>Actions</th>
                     </tr>
@@ -29,6 +30,7 @@
                             <td>{{ $product->name }}</td>
                             <td class="text-truncate" style="max-width: 200px;">{{ $product->description }}</td>
                             <td><strong>{{ $product->price }} €</strong></td>
+                            <td><strong>{{ $product->quantity }}</strong></td> <!-- Affichage de la quantité -->
                             <td>
                                 @if($product->images->count())
                                     @foreach($product->images as $image)

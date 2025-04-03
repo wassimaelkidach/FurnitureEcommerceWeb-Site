@@ -9,7 +9,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'price', 'category_id', 'image']; // Ajout du champ 'image'
+    protected $fillable = ['name', 'description', 'price', 'category_id', 'quantity','image'];
 
     // Relation avec les images
     public function images()
@@ -26,5 +26,6 @@ class Product extends Model
 {
     return $this->hasMany(Review::class);
 }
+
 
 }
