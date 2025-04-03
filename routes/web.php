@@ -14,7 +14,8 @@ use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FavoriteController;
-use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
+
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -93,6 +94,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 // Route pour afficher tous les produits
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
+Route::get('/search', [ProductController::class, 'search'])->name('products.search');
 
 Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
@@ -100,7 +102,6 @@ Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->
 Route::prefix('panier')->name('cart.')->middleware('auth')->group(function () {
     // Afficher le panier
     Route::get('/', [CartController::class, 'index'])->name('index');
-Route::get('/checkout', [OrderController::class, 'showcheckout'])->name('checkout');
 
     Route::post('ajouter/{product}', [CartController::class, 'add'])->name('add');
 
@@ -118,3 +119,4 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // routes/web.php
+Route::post('payment', [PaymentController::class, 'processPayment'])->name('payment.process');

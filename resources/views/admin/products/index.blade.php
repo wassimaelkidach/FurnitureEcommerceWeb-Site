@@ -16,6 +16,7 @@
                         <th>Description</th>
                         <th>Prix</th>
                         <th>Quantité</th> <!-- Nouvelle colonne pour la quantité -->
+                        <th>Couleurs</th> <!-- Nouvelle colonne pour les couleurs -->
                         <th>Autres images</th>
                         <th>Actions</th>
                     </tr>
@@ -31,6 +32,15 @@
                             <td class="text-truncate" style="max-width: 200px;">{{ $product->description }}</td>
                             <td><strong>{{ $product->price }} €</strong></td>
                             <td><strong>{{ $product->quantity }}</strong></td> <!-- Affichage de la quantité -->
+                            <td>
+                                @if($product->colors->count())
+                                    @foreach($product->colors as $color)
+                                        <span class="badge" style="background-color: {{ $color->hex_code }};">{{ $color->name }}</span>
+                                    @endforeach
+                                @else
+                                    <span class="text-muted">Aucune couleur</span>
+                                @endif
+                            </td>
                             <td>
                                 @if($product->images->count())
                                     @foreach($product->images as $image)

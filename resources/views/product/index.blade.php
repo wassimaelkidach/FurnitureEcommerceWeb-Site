@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+<!-- Formulaire de recherche -->
+<
+
+
+
     <div class="container">
         <h1>Tous les Produits</h1>
 
@@ -19,8 +24,11 @@
                             <h5 class="card-title">{{ $product->name }}</h5>
                             <p class="card-text">{{ $product->description }}</p>
                             <p>{{ $product->price }} €</p>
-                            <a href="{{ route('cart.add', $product->id) }}" class="btn btn-primary">Ajouter au panier</a>
-                            <a href="{{ route('product.show', $product->id) }}" class="btn btn-secondary">Voir détails</a>
+                            <form action="{{ route('cart.add', $product->id) }}" method="POST" style="display: inline-block;">
+                                @csrf
+                                <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 80px; display: inline-block;">
+                                <button type="submit" class="btn btn-success">Ajouter au panier</button>
+                            </form>                            <a href="{{ route('product.show', $product->id) }}" class="btn btn-secondary">Voir détails</a>
                         </div>
                     </div>
                 </div>

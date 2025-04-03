@@ -12,6 +12,10 @@ class Product extends Model
     protected $fillable = ['name', 'description', 'price', 'category_id', 'quantity','image'];
 
     // Relation avec les images
+    public function colors()
+    {
+        return $this->belongsToMany(Color::class, 'product_color');
+    }
     public function images()
     {
         return $this->hasMany(ProductImage::class);
