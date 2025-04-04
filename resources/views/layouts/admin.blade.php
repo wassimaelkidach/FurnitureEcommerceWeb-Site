@@ -91,6 +91,11 @@
 </a>
 
             </li>
+            <li class="nav-item">
+            <a class="nav-link" href="{{ route('admin.coupons') }}">
+    <i class="fas fa-box"></i> Coupons
+
+            </li>
 
             <!-- Gérer les utilisateurs -->
             <li class="nav-item">

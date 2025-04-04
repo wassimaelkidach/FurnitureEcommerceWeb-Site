@@ -50,7 +50,7 @@
                 <h3>Résumé de la commande</h3>
                 <p><strong>Total des articles : </strong> {{ $totalItems }} articles</p>
                 <p><strong>Total : </strong> {{ $totalPrice }} €</p>
-                <a href="" class="btn btn-success">Passer à la caisse</a>
+                <a href="{{ route('cart.checkout') }}" class="btn btn-success">Passer à la caisse</a>
             </div>
         @else
             <p>Votre panier est vide.</p>

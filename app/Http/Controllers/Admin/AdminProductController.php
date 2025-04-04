@@ -15,10 +15,9 @@ class AdminProductController extends Controller
     // Afficher la liste des produits
     public function index()
     {
-        $products = Product::all();
+        $products = Product::with(['colors', 'images'])->get();
         return view('admin.products.index', compact('products'));
     }
-
     // Afficher le formulaire de création d'un produit
     public function create()
     {
@@ -78,13 +77,13 @@ class AdminProductController extends Controller
 
 
     // Afficher le formulaire de modification d'un produit
-  
-        public function edit($id)
-        {
-            $product = Product::findOrFail($id);
-            return view('admin.products.edit', compact('product'));
-        }
-    
+    public function edit($id)
+    {
+        $product = Product::with(['colors', 'images'])->findOrFail($id);
+        $categories = Category::all();
+        $colors = Color::all();
+        return view('admin.products.edit', compact('product', 'categories', 'colors'));
+    }
 
     // Mettre à jour un produit
     public function update(Request $request, $id)
