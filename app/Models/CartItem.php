@@ -17,4 +17,9 @@ class CartItem extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function color()
+{
+    return $this->belongsTo(Color::class, 'color');
+}
+
 }

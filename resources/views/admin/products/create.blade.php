@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container py-5">
-<div class="row mb-4">
+    <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center border-bottom pb-3">
                 <div class="d-flex align-items-center">
@@ -61,6 +61,35 @@
                             </div>
 
                             <div class="mb-4">
+                                <label for="quantity" class="form-label fw-bold">Quantité <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control border-2 py-2" id="quantity" name="quantity" 
+                                       value="{{ old('quantity') }}" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Colonne droite -->
+                        <div class="col-lg-6">
+                            <div class="mb-4">
+                                <label for="description" class="form-label fw-bold">Description <span class="text-danger">*</span></label>
+                                <textarea class="form-control border-2" id="description" name="description" rows="8" 
+                                          placeholder="Décrivez le produit en détail..." required>{{ old('description') }}</textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="colors" class="form-label fw-bold">Couleurs disponibles</label>
+                                <select name="colors[]" id="colors" class="form-control border-2" multiple>
+                                    @foreach($colors as $color)
+                                        <option value="{{ $color->id }}">{{ $color->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section Catégorie -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-4">
                                 <label for="category_id" class="form-label fw-bold">Catégorie <span class="text-danger">*</span></label>
                                 <select class="form-select border-2 py-2" id="category_id" name="category_id" required>
                                     <option value="" disabled selected>Sélectionnez une catégorie</option>
@@ -72,18 +101,9 @@
                                 </select>
                             </div>
                         </div>
-                        
-                        <!-- Colonne droite -->
-                        <div class="col-lg-6">
-                            <div class="mb-4">
-                                <label for="description" class="form-label fw-bold">Description <span class="text-danger">*</span></label>
-                                <textarea class="form-control border-2" id="description" name="description" rows="8" 
-                                          placeholder="Décrivez le produit en détail..." required>{{ old('description') }}</textarea>
-                            </div>
-                        </div>
                     </div>
 
-                    <!-- Ligne des images -->
+                    <!-- Ligne des images MODIFIÉE -->
                     <div class="row mt-2">
                         <div class="col-lg-6">
                             <div class="mb-4">
@@ -93,7 +113,8 @@
                                     <label for="image" class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm">
                                         <i class="fas fa-cloud-upload-alt me-2"></i> Choisir un fichier
                                     </label>
-                                    <div class="form-text mt-2">Formats acceptés : JPEG, PNG (Max 5MB)</div>
+                                    <div id="image-info" class="form-text mt-2 text-primary fw-semibold"></div>
+                                    <div class="form-text">Formats acceptés : JPEG, PNG (Max 5MB)</div>
                                 </div>
                             </div>
                         </div>
@@ -106,7 +127,8 @@
                                     <label for="images" class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm">
                                         <i class="fas fa-images me-2"></i> Choisir des fichiers
                                     </label>
-                                    <div class="form-text mt-2">Sélectionnez plusieurs images (Max 10MB au total)</div>
+                                    <div id="gallery-info" class="form-text mt-2 text-primary fw-semibold"></div>
+                                    <div class="form-text">Sélectionnez plusieurs images (Max 10MB au total)</div>
                                 </div>
                             </div>
                         </div>
@@ -126,96 +148,47 @@
         </div>
     </div>
 </div>
+@endsection
 
-<style>
-    /* Styles de base */
-    body {
-        background-color: #f8f9fa;
-    }
-    
-    /* Section blanche avec ombre */
-    .shadow-lg {
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
-                    0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-        transition: all 0.3s ease;
-    }
-    
-    .rounded-4 {
-        border-radius: 1rem !important;
-    }
-    
-    /* Champs de formulaire */
-    .form-control, .form-select {
-        border-width: 2px !important;
-        padding: 0.75rem 1rem;
-        transition: all 0.3s ease;
-    }
-    
-    .form-control:focus, .form-select:focus {
-        border-color: #4361ee;
-        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
-    }
-    
-    /* Zone d'upload */
-    .file-upload-container {
-        background-color: #f8fafc;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-    
-    .file-upload-container:hover {
-        background-color: #f1f5f9;
-        border-color: #4361ee !important;
-    }
-    
-    .border-dashed {
-        border-style: dashed !important;
-    }
-    
-    /* Boutons */
-    .btn {
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-    
-    .btn-primary {
-        background-color: #4361ee;
-        border-color: #4361ee;
-    }
-    
-    .btn-primary:hover {
-        background-color: #3a56d4;
-        transform: translateY(-1px);
-    }
-    
-    .btn-outline-primary {
-        color: #4361ee;
-        border-color: #4361ee;
-    }
-    
-    .btn-outline-primary:hover {
-        background-color: #f0f3ff;
-    }
-    
-    .rounded-pill {
-        border-radius: 50rem !important;
-    }
-    
-    /* Alertes */
-    .alert-danger {
-        background-color: rgba(220, 53, 69, 0.1);
-        border-left: 4px solid #dc3545 !important;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-        .bg-white {
-            padding: 1.5rem !important;
-        }
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Image principale
+        document.getElementById('image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const infoElement = document.getElementById('image-info');
+            
+            if (file) {
+                infoElement.innerHTML = `
+                    <i class="fas fa-check-circle text-success me-1"></i>
+                    ${file.name}
+                `;
+            } else {
+                infoElement.innerHTML = '';
+            }
+        });
         
-        .file-upload-container {
-            padding: 1.5rem !important;
-        }
-    }
-</style>
+        // Images multiples
+        document.getElementById('images').addEventListener('change', function(e) {
+            const files = e.target.files;
+            const infoElement = document.getElementById('gallery-info');
+            
+            if (files.length > 0) {
+                if (files.length === 1) {
+                    infoElement.innerHTML = `
+                        <i class="fas fa-check-circle text-success me-1"></i>
+                        1 fichier sélectionné: ${files[0].name}
+                    `;
+                } else {
+                    infoElement.innerHTML = `
+                        <i class="fas fa-check-circle text-success me-1"></i>
+                        ${files.length} fichiers sélectionnés
+                    `;
+                }
+            } else {
+                infoElement.innerHTML = '';
+            }
+        });
+    });
+</script>
 @endsection

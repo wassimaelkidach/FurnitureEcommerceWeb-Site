@@ -30,11 +30,14 @@
                 @csrf
                 <div class="row mb-3">
                     <div class="col">
-                        <select name="color" class="form-select" required>
-                            <option value="">Select Color</option>
-                            @foreach(explode(',', $product->colors) as $color)
-                                <option value="{{ trim($color) }}">{{ trim($color) }}</option>
-                            @endforeach
+                    <select name="color" class="form-control" required>
+                    <option value="">Select Color</option>
+                    @foreach($product->colors as $color)
+                    <option value="{{ $color->id }}" style="background-color: {{ $color->hex_code }}; color: white;">
+    {{ $color->name }}
+</option>
+@endforeach
+
                         </select>
                     </div>
                   

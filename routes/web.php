@@ -106,6 +106,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
     Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.applyCoupon');
     Route::delete('/cart/coupon', [CartController::class, 'removeCoupon'])->name('cart.removeCoupon');
+    Route::patch('/cart/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update');
 });
 // favoris
 

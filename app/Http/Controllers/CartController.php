@@ -50,6 +50,7 @@ class CartController extends Controller
             'color' => 'required',
             'quantity' => 'required|numeric|min:1'
         ]);
+     
 
         CartItem::updateOrCreate(
             [
@@ -102,4 +103,23 @@ class CartController extends Controller
         session()->forget('coupon');
         return back()->with('success', 'Coupon removed');
     }
+
+    // Ajoutez cette méthode dans votre CartController
+public function updateQuantity(Request $request, CartItem $cartItem)
+{
+    $request->validate([
+        'change' => 'required|in:-1,1'
+    ]);
+
+    $newQuantity = $cartItem->quantity + $request->change;
+
+    // Empêcher la quantité d'être inférieure à 1
+    if ($newQuantity < 1) {
+        return back()->with('error', 'Quantity cannot be less than 1');
+    }
+
+    $cartItem->update(['quantity' => $newQuantity]);
+
+    return back()->with('success', 'Quantity updated');
+}
 }
