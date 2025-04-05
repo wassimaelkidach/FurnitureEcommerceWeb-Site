@@ -11,6 +11,7 @@
         @endif
 
         @if(count($cart) > 0)
+            <!-- Tableau des articles -->
             <div class="cart-table">
                 <div class="cart-header">
                     <div class="cart-header-item">Produit</div>
@@ -30,7 +31,7 @@
                     </div>
                     
                     <div class="cart-price">
-                        {{ number_format($product['price'], 2) }} €
+                        {{ number_format($product['price'], 2) }} MAD
                     </div>
                     
                     <div class="cart-quantity">
@@ -47,7 +48,7 @@
                     </div>
                     
                     <div class="cart-total">
-                        {{ number_format($product['price'] * $product['quantity'], 2) }} €
+                        {{ number_format($product['price'] * $product['quantity'], 2) }} MAD
                     </div>
                     
                     <div class="cart-actions">
@@ -71,11 +72,37 @@
                 </div>
                 <div class="summary-row total">
                     <span>Total</span>
-                    <span>{{ number_format($totalPrice, 2) }} €</span>
+                    <span>{{ number_format($totalPrice, 2) }} MAD</span>
                 </div>
                 <a href="#" class="checkout-btn">Passer la commande</a>
             </div>
+
+            <!-- Suggestions de produits -->
+            <div class="product-suggestions">
+                <h3>Complétez votre commande</h3>
+                <div class="suggestions-grid">
+                    @foreach($randomProducts as $product)
+                    <div class="suggestion-card">
+                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="suggestion-image">
+                        <div class="suggestion-info">
+                            <h4>{{ $product->name }}</h4>
+                            <p>{{ number_format($product->price, 2) }} MAD</p>
+                            <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                                @csrf
+                                <div class="add-to-cart">
+                                    <input type="number" name="quantity" value="1" min="1" class="suggestion-quantity">
+                                    <button type="submit" class="add-btn">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
         @else
+            <!-- Panier vide -->
             <div class="empty-cart">
                 <i class="fas fa-shopping-cart"></i>
                 <h3>Votre panier est vide</h3>
@@ -83,38 +110,12 @@
                 <a href="{{ route('home') }}" class="continue-shopping">Continuer vos achats</a>
             </div>
         @endif
-
-        <!-- Suggestions de produits -->
-        @if(count($cart) > 0)
-        <div class="product-suggestions">
-            <h3>Complétez votre commande</h3>
-            <div class="suggestions-grid">
-                @foreach($randomProducts as $product)
-                <div class="suggestion-card">
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="suggestion-image">
-                    <div class="suggestion-info">
-                        <h4>{{ $product->name }}</h4>
-                        <p>{{ number_format($product->price, 2) }} MAD</p>
-                        <form action="{{ route('cart.add', $product->id) }}" method="POST">
-                            @csrf
-                            <div class="add-to-cart">
-                                <input type="number" name="quantity" value="1" min="1" class="suggestion-quantity">
-                                <button type="submit" class="add-btn">
-                                    <i class="fas fa-cart-plus"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-        @endif
     </div>
 @endsection
 
+
 <style>
-    /* Style général */
+    /* ============ BASE STYLES ============ */
     .cart-container {
         max-width: 1200px;
         margin: 2rem auto;
@@ -130,7 +131,7 @@
         font-weight: 600;
     }
 
-    /* Tableau du panier */
+    /* ============ CART TABLE STYLES ============ */
     .cart-table {
         border: 1px solid #eee;
         border-radius: 8px;
@@ -147,6 +148,10 @@
         border-bottom: 1px solid #eee;
     }
 
+    .cart-header-item {
+        color: #333;
+    }
+
     .cart-item {
         display: grid;
         grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr;
@@ -160,11 +165,12 @@
         background-color: #f9f9f9;
     }
 
-    /* Produit */
+    /* Product cell */
     .cart-product {
         display: flex;
         align-items: center;
         gap: 1rem;
+        color: #333;
     }
 
     .product-image {
@@ -175,7 +181,7 @@
         border: 1px solid #eee;
     }
 
-    /* Quantité */
+    /* Quantity controls */
     .quantity-form {
         display: flex;
         flex-direction: column;
@@ -185,6 +191,7 @@
     .quantity-control {
         display: flex;
         align-items: center;
+        gap: 0.5rem;
     }
 
     .quantity-btn {
@@ -192,11 +199,13 @@
         height: 30px;
         background: #f1f1f1;
         border: none;
+        border-radius: 4px;
         cursor: pointer;
         font-size: 1rem;
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: background 0.3s;
     }
 
     .quantity-btn:hover {
@@ -208,44 +217,53 @@
         height: 30px;
         text-align: center;
         border: 1px solid #ddd;
-        margin: 0 5px;
+        border-radius: 4px;
+    }
+
+    .cart-total{
+        color: #333;
     }
 
     .update-btn {
-        background: #B3AC9D;
+        background: #6E9996;
         color: white;
         border: none;
-        padding: 0.3rem 0.6rem;
+        padding: 0.8rem;
         border-radius: 4px;
         font-size: 0.8rem;
         cursor: pointer;
         transition: background 0.3s;
+        white-space: nowrap;
+        margin-right: 20px;
     }
 
     .update-btn:hover {
-        background: #7A7568;
+        background: #518581;
     }
 
-    /* Bouton supprimer */
+    /* Remove button */
     .remove-btn {
-        background: #ff4757;
-        color: white;
+        background: none;
+        color: #ff4757;
         border: none;
-        width: 30px;
+        width: 40px;
         height: 30px;
+        border-radius: 4px;
+        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        cursor: pointer;
-        transition: background 0.3s;
+        font-size: 1.2rem;
+        transition: color 0.3s;
     }
 
     .remove-btn:hover {
-        background: #e84118;
+        color: #e84118;
     }
 
-    /* Résumé de commande */
+    /* ============ ORDER SUMMARY ============ */
     .order-summary {
+        color: #333;
         background: #f8f9fa;
         border-radius: 8px;
         padding: 1.5rem;
@@ -286,7 +304,7 @@
         background: #3e8e41;
     }
 
-    /* Panier vide */
+    /* ============ EMPTY CART ============ */
     .empty-cart {
         text-align: center;
         padding: 3rem;
@@ -297,7 +315,7 @@
 
     .empty-cart i {
         font-size: 3rem;
-        color: #B3AC9D;
+        color: #6E9996;
         margin-bottom: 1rem;
     }
 
@@ -309,7 +327,7 @@
     .continue-shopping {
         display: inline-block;
         margin-top: 1rem;
-        background: #B3AC9D;
+        background: #6E9996;
         color: white;
         padding: 0.6rem 1.2rem;
         border-radius: 4px;
@@ -318,10 +336,10 @@
     }
 
     .continue-shopping:hover {
-        background: #7A7568;
+        background: #518581;
     }
 
-    /* Suggestions de produits */
+    /* ============ PRODUCT SUGGESTIONS ============ */
     .product-suggestions {
         margin-top: 3rem;
         padding-top: 2rem;
@@ -339,6 +357,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 1.5rem;
+        margin: 20px 0;
     }
 
     .suggestion-card {
@@ -370,7 +389,7 @@
     }
 
     .suggestion-info p {
-        color: #B3AC9D;
+        color: #333;
         font-weight: 600;
         margin-bottom: 0.8rem;
     }
@@ -390,7 +409,7 @@
 
     .add-btn {
         flex: 1;
-        background: #B3AC9D;
+        background: #4CAF50;
         color: white;
         border: none;
         border-radius: 4px;
@@ -399,10 +418,10 @@
     }
 
     .add-btn:hover {
-        background: #7A7568;
+        background: #3e8e41;
     }
 
-    /* Responsive */
+    /* ============ RESPONSIVE STYLES ============ */
     @media (max-width: 768px) {
         .cart-header {
             display: none;
@@ -430,19 +449,3 @@
         }
     }
 </style>
-
-<script>
-    // Script pour les boutons +/-
-    document.querySelectorAll('.quantity-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const input = this.parentElement.querySelector('.quantity-input');
-            if (this.classList.contains('minus')) {
-                if (parseInt(input.value) > 1) {
-                    input.value = parseInt(input.value) - 1;
-                }
-            } else {
-                input.value = parseInt(input.value) + 1;
-            }
-        });
-    });
-</script>
