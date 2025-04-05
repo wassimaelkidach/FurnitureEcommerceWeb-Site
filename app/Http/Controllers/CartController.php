@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CartItem;
 use App\Models\Coupon;
+use App\Models\Address;
+use App\Models\User;
+
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 
@@ -122,4 +125,23 @@ public function updateQuantity(Request $request, CartItem $cartItem)
 
     return back()->with('success', 'Quantity updated');
 }
+
+public function checkout()
+{
+
+    // Récupérer les produits du panier de l'utilisateur connecté
+    $cartItems = CartItem::with(['product', 'color'])
+    ->where('user_id', Auth::id())
+    ->get();
+    $subtotal = $cartItems->sum(function ($item) {
+        return $item->price * $item->quantity;
+    });
+
+    $shipping = 10.00;
+    $vat = $subtotal * 0.2; // TVA de 20%
+    $total = $subtotal + $shipping + $vat;
+
+    return view('checkout', compact('cartItems', 'subtotal', 'shipping', 'vat', 'total'));
+}
+
 }

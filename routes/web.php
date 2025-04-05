@@ -15,7 +15,9 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\OrderController;
 
+use App\Http\Controllers\AddressController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -107,6 +109,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.applyCoupon');
     Route::delete('/cart/coupon', [CartController::class, 'removeCoupon'])->name('cart.removeCoupon');
     Route::patch('/cart/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update');
+    Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 });
 // favoris
 
@@ -122,3 +125,36 @@ Route::middleware(['auth'])->group(function () {
     //return redirect()->back()->with('success', 'Coupon session data cleared!');});
 
     //orders
+    Route::post('/addresses', [AddressController::class, 'store'])->name('address.store');
+
+
+    use App\Http\Controllers\PaypalController;
+
+Route::get('/payment/success-page', function () {
+    return view('payment.success');
+})->name('payment.success');
+
+Route::get('/payment/cancel-page', function () {
+    return view('payment.cancel');
+})->name('payment.cancel');
+
+Route::get('/payment/error-page', function () {
+    return view('payment.error');
+})->name('payment.error');
+
+Route::get('/payment/form', function () {
+    return view('payment.form');
+})->name('payment.form');
+
+Route::post('/paypal/create', [PaypalController::class, 'createPayment'])->name('paypal.create');
+
+
+use App\Http\Controllers\StripeController;
+
+Route::get('/payment/form', function () {
+    return view('payment.formstripe');
+})->name('payment.form');
+
+Route::post('/stripe/checkout', [StripeController::class, 'checkout'])->name('stripe.checkout');
+Route::get('/stripe/success', [StripeController::class, 'success'])->name('stripe.success');
+Route::get('/stripe/cancel', [StripeController::class, 'cancel'])->name('stripe.cancel');

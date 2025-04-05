@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+@stack('scripts')
 <style>
     /* Styles améliorés */
     .shadow-hover {

@@ -29,8 +29,8 @@
                                 <i class="fas fa-eye"></i> Voir détails
                             </a>
                             
-                            <form action="{{ route('cart.add', $product->id) }}" method="POST" class="add-to-cart-form">
-                                @csrf
+                            <form action="{{ route('cart.add', ['product' => $product->id]) }}" method="POST">
+                            @csrf
                                 <div class="quantity-selector">
                                     <input type="number" name="quantity" value="1" min="1" class="quantity-input">
                                     <button type="submit" class="add-to-cart-btn">
