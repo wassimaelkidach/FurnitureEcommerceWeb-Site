@@ -1,12 +1,47 @@
 <!DOCTYPE html>
 <html lang="fr">
+<style>
+    /* Styles améliorés */
+    .shadow-hover {
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    }
+    .shadow-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .img-cover {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .ratio-4x3 {
+        aspect-ratio: 4 / 3;
+    }
+    nav {
+        background: linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%);
+        padding: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    nav ul li a {
+        transition: all 0.3s ease;
+        border-radius: 50px;
+        padding: 0.5rem 1.5rem;
+    }
+    nav ul li a:hover {
+        background: rgba(255,255,255,0.15);
+        transform: translateY(-2px);
+    }
+</style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Mon Site E-commerce')</title>
     <!-- Inclure ici ton fichier CSS global -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <style>
