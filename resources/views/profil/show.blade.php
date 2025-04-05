@@ -86,7 +86,7 @@
 
     /* En-tête du profil */
     .profile-header {
-        background: linear-gradient(135deg, #D9D5CC, #3498db);
+        background: linear-gradient(135deg, #DCE7E6, #518581);
         color: white;
         padding: 2rem;
         text-align: center;
@@ -207,7 +207,7 @@
 
     /* Bouton de soumission */
     .btn-primary {
-        background: linear-gradient(135deg, #D9D5CC, #3498db);
+        background:  #4CAF50;
         color: white;
         border: none;
         padding: 0.8rem 1.5rem;
