@@ -17,7 +17,9 @@
                     <div class="product-image-container">
                         <img src="{{ asset('storage/' . $favorite->product->image) }}" alt="{{ $favorite->product->name }}" class="product-image">
                         <div class="product-badge favorite">
-                            <i class="fas fa-heart"></i>
+                            <button>
+                                <i class="fas fa-heart"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -55,9 +57,11 @@
                     <div class="product-actions">
                         <form action="{{ route('favorites.store', $product->id) }}" method="POST" class="favorite-form">
                             @csrf
-                            <button type="submit" class="favorite-btn">
-                                <i class="far fa-heart"></i>
-                            </button>
+                            <div class="favorite-btn">
+                                <button type="submit">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -114,7 +118,7 @@
 
     .empty-state i {
         font-size: 3rem;
-        color: #B3AC9D;
+        color: #6E9996;
         margin-bottom: 1rem;
     }
 
@@ -164,24 +168,23 @@
     }
 
     /* Badge favori */
-    .product-badge {
+    .product-badge button i{
         position: absolute;
         top: 10px;
         right: 10px;
         background: white;
+        border: none;
         width: 36px;
         height: 36px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
+        cursor: pointer;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    .product-badge.favorite {
         color: #ff4757;
+        transition: all 0.3s ease;
     }
-
     /* Informations du produit */
     .product-info {
         padding: 1.5rem;
@@ -196,7 +199,7 @@
 
     .product-price {
         font-size: 1.3rem;
-        color: #B3AC9D;
+        color: #333 !important;
         font-weight: 700;
         margin-bottom: 1.5rem;
     }
@@ -231,7 +234,7 @@
         background: #e84118;
     }
 
-    .favorite-btn {
+    .favorite-btn button {
         position: absolute;
         top: 10px;
         right: 10px;
@@ -249,7 +252,7 @@
         transition: all 0.3s ease;
     }
 
-    .favorite-btn:hover {
+    .favorite-btn button:hover {
         color: #ff4757;
         transform: scale(1.1);
     }
@@ -269,7 +272,7 @@
         display: block;
         width: 100px;
         height: 3px;
-        background: #B3AC9D;
+        background: #6E9996;
         margin: 0.5rem auto 0;
     }
 
@@ -284,4 +287,5 @@
             font-size: 1.8rem;
         }
     }
+    
 </style>
