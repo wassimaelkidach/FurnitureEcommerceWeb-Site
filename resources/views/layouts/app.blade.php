@@ -9,11 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Harrington&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #B3AC9D;
-            --secondary-color: #7A7568;
+            --primary-color: #6E9996;
+            --secondary-color: #518581;
             --text-color: white;
-            --hover-color: #D9D5CC;
-            --background-light: #F5F3EE;
+            --hover-color: #A8C2C0;
+            --background-light: #DCE7E6;
         }
         
         /* Réinitialisation complète */
