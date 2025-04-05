@@ -1,27 +1,145 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="container">
-        <h1>Modifier le produit</h1>
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-3">
+                <h1 class="h3 mb-0">Modifier le Produit</h1>
+                <!-- <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Retour
+                </a> -->
+            </div>
+            <p class="text-muted mt-2">Mettre à jour les informations du produit</p>
+        </div>
+    </div>
 
-        <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            <div>
-                <label for="name">Nom</label>
-                <input type="text" name="name" value="{{ $product->name }}" id="name" required>
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" id="product-edit-form">
+        @csrf
+        @method('PUT')
+        
+        <input type="hidden" name="deleted_images" id="deleted_images" value="">
+        
+        <div class="row g-4">
+            <!-- Section gauche - Informations produit -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary mb-4">Informations de base</h5>
+                        
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nom du produit</label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   value="{{ old('name', $product->name) }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" 
+                                      rows="5" required>{{ old('description', $product->description) }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="category_id" class="form-label">Catégorie</label>
+                            <select class="form-select" id="category_id" name="category_id" required>
+                                <option value="">Sélectionner une catégorie</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" {{ $product->category_id == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Prix (MAD)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">MAD</span>
+                                <input type="number" class="form-control" id="price" name="price" 
+                                       value="{{ old('price', $product->price) }}" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div>
-                <label for="description">Description</label>
-                <textarea name="description" id="description" required>{{ $product->description }}</textarea>
-            </div>
-            <div>
-                <label for="price">Prix</label>
-                <input type="number" name="price" value="{{ $product->price }}" id="price" required>
-            </div>
-            <div>
-                <label for="main_image">Image principale</label>
-                <input type="file" name="main_image" id="main_image">
+            
+            <!-- Section droite - Images -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary mb-4">Images</h5>
+                        
+                        <!-- Image principale -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">Image principale</h6>
+                            
+                            <div class="border rounded p-3 mb-3 text-center bg-light" id="current-image-container">
+                                @if($product->image)
+                                    <img src="{{ asset('storage/' . $product->image) }}" 
+                                         class="img-fluid rounded mb-2" 
+                                         style="max-height: 200px; object-fit: contain;" 
+                                         alt="Image actuelle" id="current-image">
+                                @else
+                                    <div class="text-muted py-4" id="no-image-message">
+                                        <i class="fas fa-image fa-2x mb-2"></i>
+                                        <p class="mb-0">Aucune image principale</p>
+                                    </div>
+                                @endif
+                            </div>
+                            
+                            <div class="file-upload-wrapper">
+                                <label for="image" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-upload me-2"></i> Changer l'image
+                                </label>
+                                <input type="file" class="d-none" id="image" name="image" accept="image/*">
+                                <div class="file-name mt-2 small text-muted" id="image-filename"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Galerie d'images -->
+                        <div>
+                            <h6 class="fw-bold mb-3">Galerie d'images</h6>
+                            
+                            <div class="row g-2 mb-3" id="gallery-container">
+                                @if($product->images->isEmpty())
+                                    <div class="col-12 text-center text-muted py-3" id="no-gallery-message">
+                                        <i class="fas fa-images fa-2x mb-2"></i>
+                                        <p class="mb-0">Aucune image supplémentaire</p>
+                                    </div>
+                                @else
+                                    @foreach($product->images as $image)
+                                    <div class="col-4 col-md-3 gallery-item">
+                                        <div class="position-relative border rounded p-1 bg-light">
+                                            <img src="{{ asset('storage/' . $image->image_path) }}" 
+                                                 class="img-fluid rounded" 
+                                                 style="height: 100px; width: 100%; object-fit: cover;" 
+                                                 alt="Image galerie">
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                @endif
+                            </div>
+                            
+                            <div class="file-upload-wrapper">
+                                <label for="images" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-plus me-2"></i> Ajouter des images
+                                </label>
+                                <input type="file" class="d-none" id="images" name="images[]" multiple accept="image/*">
+                                <div class="file-name mt-2 small text-muted" id="gallery-filename"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Boutons d'action -->
@@ -35,9 +153,9 @@
                     </a>
                 </div>
             </div>
-            <button type="submit">Mettre à jour le produit</button>
-        </form>
-    </div>
+        </div>
+    </form>
+</div>
 @endsection
 
 @section('scripts')

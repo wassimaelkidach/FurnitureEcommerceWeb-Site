@@ -18,8 +18,8 @@
                             <a href="{{ route('product.show', $product->id) }}" class="btn btn-primary">Voir les détails</a>
 
                             <!-- Formulaire pour ajouter le produit au panier -->
-                            <form action="{{ route('cart.add', $product->id) }}" method="POST" style="display: inline-block;">
-                                @csrf
+                            <form action="{{ route('cart.add', $product) }}" method="POST">
+                            @csrf
                                 <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 80px; display: inline-block;">
                                 <button type="submit" class="btn btn-success">Ajouter au panier</button>
                             </form>

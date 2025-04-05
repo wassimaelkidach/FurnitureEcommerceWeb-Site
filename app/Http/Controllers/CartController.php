@@ -2,209 +2,104 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Product;
-use App\Models\Coupon;
-use App\Models\Address;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Surfsidemedia\Shoppingcart\Facades\Cart;
+use App\Models\CartItem;
+use App\Models\Coupon;
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
     public function index()
     {
-        $items = Cart::instance('cart')->content();
-        return view('cart', compact('items'));
+        $cartItems = CartItem::with('product')
+            ->where('user_id', Auth::id())
+            ->get();
+
+        $subtotal = $cartItems->sum(function ($item) {
+            return $item->price * $item->quantity;
+        });
+
+        $discount = 0;
+        $coupon = session('coupon');
+
+        if ($coupon) {
+            $discount = $coupon['type'] == 'fixed' 
+                ? $coupon['value'] 
+                : ($subtotal * $coupon['value']) / 100;
+        }
+
+        $subtotalAfterDiscount = $subtotal - $discount;
+        $vat = $subtotalAfterDiscount * 0.19; // 19% VAT
+        $total = $subtotalAfterDiscount + $vat;
+
+        return view('cart.index', compact(
+            'cartItems',
+            'subtotal',
+            'discount',
+            'subtotalAfterDiscount',
+            'vat',
+            'total',
+            'coupon'
+        ));
     }
 
-    public function add_to_cart(Request $request)
+    public function addToCart(Request $request, Product $product)
     {
         $request->validate([
-            'id' => 'required|integer|exists:products,id',
-            'name' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:1|max:10',
-            'price' => 'required|numeric|min:0'
+            'color' => 'required',
+            'quantity' => 'required|numeric|min:1'
         ]);
 
-        try {
-            Cart::instance('cart')->add(
-                $request->id,
-                $request->name,
-                $request->quantity,
-                $request->price
-            )->associate('App\Models\Product');
+        CartItem::updateOrCreate(
+            [
+                'user_id' => Auth::id(),
+                'product_id' => $product->id,
+                'color' => $request->color,
+            ],
+            [
+                'quantity' => $request->quantity,
+                'price' => $product->price
+            ]
+        );
 
-            return redirect()->back()->with('success', 'Item added to cart successfully!');
-            
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to add item to cart: '.$e->getMessage());
-        }
+        return redirect()->route('cart.index')->with('success', 'Product added to cart!');
     }
 
-    public function increase_cart_quantity($rowId)
+    public function removeFromCart(CartItem $cartItem)
     {
-        try {
-            $product = Cart::instance('cart')->get($rowId);
-            
-            if (!$product) {
-                throw new \Exception('Product not found in cart');
-            }
-
-            $qty = $product->qty + 1;
-            Cart::instance('cart')->update($rowId, $qty);
-
-            return redirect()->back()->with('success', 'Quantity increased');
-
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
+        $cartItem->delete();
+        return back()->with('success', 'Item removed from cart');
     }
 
-    public function decrease_cart_quantity($rowId)
+    public function clearCart()
     {
-        try {
-            $product = Cart::instance('cart')->get($rowId);
-            
-            if (!$product) {
-                throw new \Exception('Product not found in cart');
-            }
-
-            $qty = $product->qty - 1;
-            
-            if ($qty < 1) {
-                $qty = 1;
-            }
-
-            Cart::instance('cart')->update($rowId, $qty);
-
-            return redirect()->back()->with('success', 'Quantity decreased');
-
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
+        CartItem::where('user_id', Auth::id())->delete();
+        return back()->with('success', 'Cart cleared');
     }
 
-    public function remove_item($rowId)
+    public function applyCoupon(Request $request)
     {
-        try {
-            $item = Cart::instance('cart')->get($rowId);
-            
-            if (!$item) {
-                throw new \Exception("Item doesn't exist in cart");
-            }
+        $coupon = Coupon::where('code', $request->coupon_code)
+            ->where('expiry_date', '>=', now())
+            ->first();
 
-            Cart::instance('cart')->remove($rowId);
-
-            return redirect()->back()->with([
-                'success' => 'Item removed from cart',
-                'cart_count' => Cart::instance('cart')->count()
-            ]);
-
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        if (!$coupon) {
+            return back()->with('error', 'Invalid coupon code');
         }
+
+        session(['coupon' => [
+            'code' => $coupon->code,
+            'type' => $coupon->type,
+            'value' => $coupon->value
+        ]]);
+
+        return back()->with('success', 'Coupon applied successfully');
     }
 
-    public function empty_cart()
+    public function removeCoupon()
     {
-        Cart::instance('cart')->destroy();
-        return redirect()->back()->with('success', 'Cart emptied successfully');
+        session()->forget('coupon');
+        return back()->with('success', 'Coupon removed');
     }
-
-   
-    public function apply_coupon_code(Request $request)
-    {
-        $coupon_code = $request->coupon_code;
-        
-        if(isset($coupon_code))
-        {
-            $coupon = Coupon::where('code', $coupon_code)
-                          ->where('expiry_date', '>=', Carbon::today())
-                          ->where('cart_value', '<=', Cart::instance('cart')->subtotal())
-                          ->first();
-    
-            if(!$coupon)
-            {
-                return redirect()->back()->with('error', 'Invalid coupon code!');
-            }
-            else
-            {
-                Session::put('coupon', [
-                    'code' => $coupon->code,
-                    'type' => $coupon->type,
-                    'value' => $coupon->value,
-                    'cart_value' => $coupon->cart_value
-                ]);
-                
-                $this->calculateDiscount();
-                return redirect()->back()->with('success', 'Coupon has been applied');
-            }
-        }
-        else
-        {
-            return redirect()->back()->with('error', 'Please enter a coupon code!');
-        }
-    }
-
-   // In your CartController
-   public function calculateDiscount()
-   {
-       $discount = 0;
-       if(Session::has('coupon'))
-       {
-           if(Session::get('coupon')['type'] == 'fixed')
-           {
-               $discount = Session::get('coupon')['value'];
-           }
-           else
-           {
-               $discount = (Cart::instance('cart')->subtotal() * Session::get('coupon')['value'])/100;
-           }
-   
-           $subtotalAfterDiscount = Cart::instance('cart')->subtotal() - $discount;
-           $taxAfterDiscount = ($subtotalAfterDiscount * config('cart.tax'))/100;
-           $totalAfterDiscount = $subtotalAfterDiscount + $taxAfterDiscount;
-   
-           Session::put('discounts', [
-               'discount' => number_format(floatval($discount), 2, '.', ''),
-               'subtotal' => number_format(floatval(Cart::instance('cart')->subtotal()), 2, '.', ''),
-               'subtotal_after_discount' => number_format(floatval($subtotalAfterDiscount), 2, '.', ''),
-               'tax' => number_format(floatval($taxAfterDiscount), 2, '.', ''),
-               'total' => number_format(floatval($totalAfterDiscount), 2, '.', '')
-           ]);
-       }
-   }
-   public function remove_coupon_code()
-{
-    try {
-        // Clear both coupon and discounts data
-        Session::forget(['coupon', 'discounts']);
-        
-        // Optional: Recalculate cart totals without coupon
-        $this->calculateDiscount();
-        
-        return redirect()
-               ->back()
-               ->with('success', 'Coupon has been removed successfully!');
-    } catch (\Exception $e) {
-        return redirect()
-               ->back()
-               ->with('error', 'Failed to remove coupon: '.$e->getMessage());
-    }
-}
-public function checkout()
-{
-    if (!Auth::check()) {
-        return redirect()->route('login');
-    }
-
-    $address = Address::where('user_id', Auth::user()->id)
-                     ->where('is_default', true)
-                     ->first();
-
-    return view('checkout', compact('address'));
-}
-
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Coupon;
+use App\Models\Order;
 
 use Illuminate\Http\Request;
 
@@ -80,4 +81,10 @@ public function coupon_delete($id)
     $coupon->delete();
     return redirect()->route('admin.coupons')->with('status','Coupon has been deleted successfully!');
 }
+
+public function orders()
+{
+    $orders = Order::orderBy('created_at','DESC')->paginate(12);
+    return view('admin.orders',compact('orders'));
+} 
 }

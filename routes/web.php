@@ -99,25 +99,14 @@ Route::get('/search', [ProductController::class, 'search'])->name('products.sear
 Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
 // panier
-
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index')->middleware('auth');;
-Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout')->middleware('auth');;
-Route::post('/cart/add', [CartController::class, 'add_to_cart'])->name('cart.add')->middleware('auth');
-Route::put('/cart/increase-quantity/{rowId}', [CartController::class, 'increase_cart_quantity'])->name('cart.qty.increase');
-Route::put('/cart/decrease-quantity/{rowId}', [CartController::class, 'decrease_cart_quantity'])->name('cart.qty.decrease');
-Route::delete('/cart/remove/{rowId}', [CartController::class, 'remove_item'])
-     ->name('cart.remove');
-Route::delete('/cart/clean', [CartController::class, 'empty_cart'])->name('cart.empty');
-Route::post('/cart/apply-coupon', [CartController::class, 'apply_coupon_code'])->name('cart.coupon.apply');
-//coupons 
-    Route::get('/admin/coupons', [AdminController::class, 'coupons'])->name('admin.coupons');
-    Route::get('/admin/coupon/add', [AdminController::class, 'coupon_add'])->name('admin.coupon.add');
-    Route::post('/admin/coupon/store', [AdminController::class, 'coupon_store'])->name('admin.coupon.store');
-    Route::get('/admin/coupon/{id}/edit', [AdminController::class, 'edit'])
-    ->name('admin.coupon.edit');
-    Route::put('/admin/coupon/update', [AdminController::class, 'coupon_update'])->name('admin.coupon.update');
-    Route::delete('/admin/coupon/{id}/delete', [AdminController::class, 'coupon_delete'])
-     ->name('admin.coupon.delete');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add/{product}', [CartController::class, 'addToCart'])->name('cart.add');
+    Route::delete('/cart/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
+    Route::post('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+    Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.applyCoupon');
+    Route::delete('/cart/coupon', [CartController::class, 'removeCoupon'])->name('cart.removeCoupon');
+});
 // favoris
 
 Route::middleware(['auth'])->group(function () {
@@ -126,8 +115,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/favorites/{id}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
 });
 
-// Clear coupon session data
-Route::get('/clear-coupon-session', function() {
-    Session::forget(['coupon', 'discounts']);
-    return redirect()->back()->with('success', 'Coupon session data cleared!');
-});
+// Clear coupon session data 
+//Route::get('/clear-coupon-session', function() {
+  //  Session::forget(['coupon', 'discounts']);
+    //return redirect()->back()->with('success', 'Coupon session data cleared!');});
+
+    //orders
