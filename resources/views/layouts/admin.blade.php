@@ -10,7 +10,8 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-  
+  <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -255,6 +256,13 @@
         width: 250px;
         right: -10px;
       }
+      .sidebar .nav.flex-column {
+  margin-top: 20px;
+}
+
+
+
+
     }
   </style>
 </head>
@@ -263,19 +271,18 @@
   <nav class="sidebar">
     <!-- En-tête de la sidebar avec le nom du site et une icône -->
     <div class="sidebar-header text-center mb-4">
-      <a href="{{ route('admin.dashboard') }}" class="d-flex align-items-center justify-content-center text-decoration-none">
-        <i class="fas fa-store fa-2x text-white me-2"></i>
-        <span class="text-white h4 mb-0">DWIRE STYLE</span>
-      </a>
-    </div>
+  <a href="{{ route('admin.dashboard') }}" class="d-flex align-items-center justify-content-center text-decoration-none">
+    <i class="fas fa-store fa-2x text-white me-2"></i>
+    <span class="text-white fs-3 fw-bold" style="letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">DWIRA STYLE</span>
+  </a>
+</div>
     
     <ul class="nav flex-column">
-      <li><a class="nav-link" href="{{ route('admin.dashboard') }}"><i class="fas fa-home"></i> <span>Tableau de bord</span></a></li>
-      <li><a class="nav-link" href="{{ route('admin.categories.index') }}"><i class="fas fa-list"></i> <span>Catégories</span></a></li>
-      <li><a class="nav-link" href="{{ route('admin.products.index') }}"><i class="fas fa-box"></i> <span>Produits</span></a></li>
-      <li><a class="nav-link"><i class="fas fa-users"></i> <span>Utilisateurs</span></a></li>
-      <li><a class="nav-link"><i class="fas fa-credit-card"></i> <span>Paiements</span></a></li>
-      <li><a class="nav-link"><i class="fas fa-shopping-cart"></i> <span>Commandes</span></a></li>
+    <ul class="nav flex-column" style="margin-top: 20px;"> <!-- Ajout de margin-top -->
+  <li><a class="nav-link" href="{{ route('admin.dashboard') }}"><i class="fas fa-home"></i> <span>Tableau de bord</span></a></li>
+  <li><a class="nav-link" href="{{ route('admin.categories.index') }}"><i class="fas fa-list"></i> <span>Catégories</span></a></li>
+  <li><a class="nav-link" href="{{ route('admin.products.index') }}"><i class="fas fa-box"></i> <span>Produits</span></a></li>
+</ul>
     </ul>
   </nav>
   
@@ -292,10 +299,11 @@
         <i class="fas fa-chevron-down dropdown-arrow"></i>
       </div>
       
+      
       <div class="user-dropdown-menu" id="userDropdownMenu">
         <div class="dropdown-header">
         <!-- Solution temporaire pour debug -->
-<img src="{{ Auth::user()->image ? '/storage/images'.Auth::user()->image : '/images/default-avatar.png' }}" 
+<img src="{{ Auth::user()->image ? '/storage'.Auth::user()->image : '/images/default-avatar.png' }}" 
      alt="Admin Photo" class="user-avatar">
           <div>
             <h4>{{ Auth::user()->name }}</h4>

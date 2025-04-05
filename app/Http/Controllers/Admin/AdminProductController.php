@@ -8,6 +8,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Color;
 
 class AdminProductController extends Controller
 {
@@ -20,7 +21,8 @@ class AdminProductController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('admin.products.create', compact('categories'));
+        $colors = Color::all();
+        return view('admin.products.create', compact('categories', 'colors'));
     }
 
     public function store(Request $request)
@@ -29,7 +31,10 @@ class AdminProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric',
+            'quantity' => 'required|integer|min:1',
             'category_id' => 'required|exists:categories,id',
+            'colors' => 'required|array',
+            'colors.*' => 'exists:colors,id',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -42,9 +47,13 @@ class AdminProductController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
+            'quantity' => $request->quantity,
             'category_id' => $request->category_id,
             'image' => $imagePath,
         ]);
+    
+        // Attach colors
+        $product->colors()->attach($request->colors);
     
         // Additional images
         if ($request->hasFile('images')) {
@@ -64,26 +73,32 @@ class AdminProductController extends Controller
 
     public function edit($id)
     {
-        $product = Product::with(['images', 'category'])->findOrFail($id);
+        $product = Product::with(['images', 'category', 'colors'])->findOrFail($id);
         $categories = Category::all();
-        return view('admin.products.edit', compact('product', 'categories'));
+        $colors = Color::all();
+        return view('admin.products.edit', compact('product', 'categories', 'colors'));
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:1',
             'category_id' => 'required|exists:categories,id',
+            'colors' => 'required|array',
+            'colors.*' => 'exists:colors,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
-        // Mise à jour des champs de base
+        $product = Product::findOrFail($id);
+    
+        // Update basic fields
         $product->update($validated);
     
-        // Gestion de l'image principale
+        // Update main image
         if ($request->hasFile('image')) {
             if ($product->image) {
                 Storage::disk('public')->delete($product->image);
@@ -93,15 +108,18 @@ class AdminProductController extends Controller
             $product->save();
         }
     
-        // Gestion des images supplémentaires (remplacement complet)
+        // Update colors
+        $product->colors()->sync($request->colors);
+    
+        // Update additional images
         if ($request->hasFile('images')) {
-            // Supprimer toutes les anciennes images
+            // Delete old images
             foreach ($product->images as $image) {
                 Storage::disk('public')->delete($image->image_path);
                 $image->delete();
             }
     
-            // Ajouter les nouvelles images
+            // Add new images
             foreach ($request->file('images') as $file) {
                 $path = $file->store('products/gallery', 'public');
                 $product->images()->create(['image_path' => $path]);
@@ -109,8 +127,9 @@ class AdminProductController extends Controller
         }
     
         return redirect()->route('admin.products.index')
-                   ->with('success', 'Produit modifié avec succès');
+                   ->with('success', 'Product updated successfully');
     }
+
     public function destroy($id)
     {
         $product = Product::with('images')->findOrFail($id);

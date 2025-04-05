@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HomeController;
+
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -10,14 +12,12 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\PaymentController;
 
-//  Page d'accueil : Affichage de la page principale
-Route::get('/', function () {
-    return view('layouts.home'); // Affiche la vue home.blade.php
-})->name('layouts.home');
 
-//  Page d'accueil (Affichage des catégories) 
-Route::get('/', [CategoryController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 //  Afficher les produits par catégorie
 Route::get('/category/{id}', [ProductController::class, 'productsByCategory'])->name('category.products');
@@ -91,16 +91,32 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Afficher les détails d'un produit spécifique (optionnel)
     Route::get('products/{product}', [AdminProductController::class, 'show'])->name('products.show');
 });
+// Route pour afficher tous les produits
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+
+Route::get('/search', [ProductController::class, 'search'])->name('products.search');
 
 Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
 
-use App\Http\Controllers\CartController;
+Route::prefix('panier')->name('cart.')->middleware('auth')->group(function () {
+    // Afficher le panier
+    Route::get('/', [CartController::class, 'index'])->name('index');
+
+    Route::post('ajouter/{product}', [CartController::class, 'add'])->name('add');
+
+    // Mettre à jour les quantités du panier
+    Route::post('mettre-a-jour', [CartController::class, 'update'])->name('update');
+
+    // Retirer un produit du panier
+    Route::post('supprimer/{product}', [CartController::class, 'remove'])->name('remove');
+});
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/add/{id}', [CartController::class, 'store'])->name('cart.store');
-    Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
-    Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
-    Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+    Route::post('/favorites/{id}', [FavoriteController::class, 'store'])->name('favorites.store');
+    Route::delete('/favorites/{id}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
 });
+
+// routes/web.php
+Route::post('payment', [PaymentController::class, 'processPayment'])->name('payment.process');

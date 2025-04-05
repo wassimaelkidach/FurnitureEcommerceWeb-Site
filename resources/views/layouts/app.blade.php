@@ -90,26 +90,27 @@ nav ul li a i {
 </style>
 <body>
 
-    <!-- Header -->
-    <header>
-        <nav>
+   <!-- Header -->
+<header>
+    <nav>
         <ul>
-    @guest
-        <li><a href="{{ route('login') }}">Se connecter</a></li>
-    @else
-        <li><a href="{{ route('profil.show') }}">Mon profil</a></li>
-        <li><a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Se déconnecter</a></li>
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-            @csrf
-        </form>
-    @endguest
-    <li><a href="{{ route('home') }}">Accueil</a></li>
-    <li><a href="{{ route('cart.index') }}"><i class="fas fa-shopping-cart"></i> Panier</a></li>
-    <li><a href=""><i class="fas fa-heart"></i> Favoris</a></li>
-</ul>
+            @guest
+                <li><a href="{{ route('login') }}">Se connecter</a></li>
+            @else
+                <li><a href="{{ route('profil.show') }}">Mon profil</a></li>
+                <li><a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Se déconnecter</a></li>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+            @endguest
+            <li><a href="{{ route('home') }}">Accueil</a></li>
+            <li><a href="{{ route('products.index') }}"> produits</a></li> <!-- Lien vers la page des produits -->
+            <li><a href="{{ route('cart.index') }}"><i class="fas fa-shopping-cart"></i> Panier</a></li>
+            <li><a href="{{ route('favorites.index') }}"><i class="fas fa-heart"></i> Favoris</a></li>
+        </ul>
+    </nav>
+</header>
 
-        </nav>
-    </header>
 
     <!-- Main Content -->
     <main>

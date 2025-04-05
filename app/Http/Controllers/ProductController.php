@@ -8,7 +8,15 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    // Afficher les produits associés à une catégorie
+    public function index()
+    {
+        // Récupérer tous les produits
+        $products = Product::all();
+
+        // Passer les produits à la vue
+        return view('product.index', compact('products'));
+    }
+    
     public function productsByCategory($id)
     {
         // Récupérer la catégorie
@@ -25,10 +33,26 @@ class ProductController extends Controller
     $product = Product::findOrFail($id);
     return view('product.show', compact('product'));
 }
+  public function search(Request $request)
+    {
+        // Récupérer le terme de recherche
+        $query = $request->input('query');
+        
+        // Vérifier si la recherche est vide
+        if ($query) {
+            // Recherche les produits qui correspondent à la recherche
+            $searchedProducts = Product::where('name', 'like', '%' . $query . '%')
+                ->orWhere('description', 'like', '%' . $query . '%')
+                ->get();
+        } else {
+            // Si aucune recherche n'est effectuée, ne renvoie aucun produit
+            $searchedProducts = collect(); // collection vide
+        }
 
-
-
-
-
-
+        // Retourner la vue avec les produits trouvés ou une collection vide
+        return view('products.index', ['searchedProducts' => $searchedProducts]);
+    }
 }
+
+
+

@@ -2,24 +2,44 @@
 
 @section('title', 'Gestion des Produits')
 
+@php
+    // Définition de la fonction helper directement dans la vue
+    if (!function_exists('getContrastColor')) {
+        function getContrastColor($hexColor) {
+            // Supprime le # si présent
+            $hexColor = ltrim($hexColor, '#');
+            
+            // Convertit en valeurs RGB
+            $r = hexdec(substr($hexColor, 0, 2));
+            $g = hexdec(substr($hexColor, 2, 2));
+            $b = hexdec(substr($hexColor, 4, 2));
+            
+            // Calcul de la luminosité (formule W3C)
+            $brightness = ($r * 299 + $g * 587 + $b * 114) / 1000;
+            
+            // Retourne noir ou blanc selon la luminosité
+            return $brightness > 128 ? '#000000' : '#FFFFFF';
+        }
+    }
+@endphp
+
 @section('content')
 <div class="container-fluid px-4">
-    <!-- Alerte Succès -->
+    <!-- Alertes -->
     @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show mb-4">
-        <i class="fas fa-check-circle me-2"></i>
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-    </div>
+        <div class="alert alert-success alert-dismissible fade show mb-4">
+            <i class="fas fa-check-circle me-2"></i>
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
     @endif
 
-    <!-- Alerte Erreur -->
     @if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show mb-4">
-        <i class="fas fa-exclamation-circle me-2"></i>
-        {{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-    </div>
+        <div class="alert alert-danger alert-dismissible fade show mb-4">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
     @endif
 
     <!-- En-tête -->
@@ -34,29 +54,27 @@
 
     <!-- Carte Principale -->
     <div class="card shadow-lg border-0 rounded-lg overflow-hidden">
-        <!-- Corps de la Carte -->
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <!-- En-têtes du Tableau -->
                     <thead class="bg-light">
                         <tr>
-                            <th class="ps-4">ID</th>
+                            <!-- <th class="ps-4">ID</th> -->
                             <th>Image</th>
                             <th>Nom</th>
                             <th>Description</th>
                             <th>Prix</th>
+                            <th>Quantité</th>
+                            <th>Couleurs</th>
                             <th>Galerie</th>
                             <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     
-                    <!-- Corps du Tableau -->
                     <tbody>
                         @forelse ($products as $product)
                         <tr>
-                            <!-- Cellules du Tableau -->
-                            <td class="ps-4 fw-semibold">#{{ $product->id }}</td>
+                            <!-- <td class="ps-4 fw-semibold">#{{ $product->id }}</td> -->
                             <td>
                                 @if($product->image)
                                 <img src="{{ asset('storage/' . $product->image) }}" 
@@ -79,6 +97,18 @@
                                 </span>
                             </td>
                             <td class="text-success fw-bold">{{ number_format($product->price, 2) }} MAD</td>
+                            <td class="fw-bold">{{ $product->quantity }}</td>
+                            <td>
+                                @if($product->colors->count())
+                                    @foreach($product->colors as $color)
+                                        <span class="badge rounded-pill me-1" style="background-color: {{ $color->hex_code }}; color: {{ getContrastColor($color->hex_code) }};">
+                                            {{ $color->name }}
+                                        </span>
+                                    @endforeach
+                                @else
+                                    <span class="badge bg-light text-muted">Aucune</span>
+                                @endif
+                            </td>
                             <td>
                                 @if($product->images->count() > 0)
                                 <div class="gallery-container" style="max-width: 200px; overflow-x: auto; white-space: nowrap;">
@@ -118,7 +148,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center py-5">
+                            <td colspan="9" class="text-center py-5">
                                 <i class="fas fa-box-open text-muted" style="font-size: 3rem;"></i>
                                 <h5 class="mt-3">Aucun produit trouvé</h5>
                                 <a href="{{ route('admin.products.create') }}" class="btn btn-primary mt-3">
@@ -132,7 +162,7 @@
             </div>
         </div>
         
-        <!-- Pied de Carte - Pagination -->
+        <!-- Pagination -->
         <div class="card-footer bg-white border-top-0 py-3">
             <div class="d-flex justify-content-center">
                 @if(method_exists($products, 'links'))
@@ -160,90 +190,28 @@
 
 @section('styles')
 <style>
-    .card {
-        border: none;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    .color-badge {
+        transition: all 0.3s ease;
     }
-    
-    .card-header {
-        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    .color-badge:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
-    
-    .table thead th {
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.5px;
-        color: rgb(12, 73, 241);
-    }
-    
-    .table tbody tr {
-        transition: all 0.2s;
-    }
-    
-    .table tbody tr:hover {
-        background-color: rgba(0, 0, 0, 0.02);
-    }
-    
-    .no-image {
-        font-size: 1.25rem;
-    }
-    
-    .rounded-pill {
-        border-radius: 50px !important;
-    }
-
-    /* Styles Galerie */
-    .gallery-container {
-        overflow-x: auto;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(0,0,0,0.2) transparent;
-        padding-bottom: 2px;
-    }
-    
-    .gallery-container::-webkit-scrollbar {
-        height: 1px;
-    }
-    
-    .gallery-container::-webkit-scrollbar-thumb {
-        background-color: rgba(0,0,0,0.2);
-        border-radius: 1px;
-    }
-    
     .cursor-zoom {
         cursor: zoom-in;
-        transition: transform 0.2s;
     }
-    
-    .cursor-zoom:hover {
-        transform: scale(1.1);
+    .gallery-container::-webkit-scrollbar {
+        height: 5px;
     }
-    
-    /* Styles Alertes */
-    .alert {
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        border: none;
-        border-left: 4px solid transparent;
+    .gallery-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
     }
-    
-    .alert-success {
-        background-color: #d1fae5;
-        color: #065f46;
-        border-left-color: #10b981;
+    .gallery-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
     }
-    
-    .alert-danger {
-        background-color: #fee2e2;
-        color: #b91c1c;
-        border-left-color: #ef4444;
-    }
-    
-    .alert i {
-        font-size: 1.2em;
-        vertical-align: middle;
+    .gallery-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
     }
 </style>
 @endsection
@@ -251,35 +219,16 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Fonctionnalité du modal d'image
+        // Gestion du modal d'image
         const imageModal = document.getElementById('imageModal');
         if (imageModal) {
             imageModal.addEventListener('show.bs.modal', function(event) {
                 const button = event.relatedTarget;
-                const imageUrl = button.getAttribute('data-bs-src');
+                const imageSrc = button.getAttribute('data-bs-src');
                 const modalImage = imageModal.querySelector('#modalImage');
-                modalImage.src = imageUrl;
+                modalImage.src = imageSrc;
             });
         }
-        
-        // Défilement horizontal pour les galeries
-        const galleries = document.querySelectorAll('.gallery-container');
-        galleries.forEach(gallery => {
-            gallery.addEventListener('wheel', function(e) {
-                if (e.deltaY === 0) return;
-                e.preventDefault();
-                this.scrollLeft += e.deltaY;
-            });
-        });
-
-        // Fermeture automatique des alertes après 5 secondes
-        setTimeout(() => {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
     });
 </script>
 @endsection

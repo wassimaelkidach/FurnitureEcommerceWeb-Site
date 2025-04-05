@@ -113,11 +113,14 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-end mt-4 pt-3 border-top">
-                            <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">
-                                <i class="bi bi-check-circle-fill me-2"></i> Enregistrer les modifications
-                            </button>
-                        </div>
+                        <div class="d-flex justify-content-end mt-4 pt-3 border-top gap-3">
+    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary px-4 rounded-pill fw-medium">
+        <i class="fas fa-arrow-left me-2"></i> Annuler
+    </a>
+    <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm fw-medium gradient-btn">
+        <i class="bi bi-check-circle-fill me-2"></i> Enregistrer les modifications
+    </button>
+</div>
                     </form>
                 </div>
             </div>
