@@ -21,12 +21,12 @@
 
                     <div class="product-info">
                         <h3 class="product-name">{{ $product->name }}</h3>
-                        <p class="product-description">{{ Str::limit($product->description, 100) }}</p>
+                        
                         <p class="product-price">{{ number_format($product->price, 2) }} MAD</p>
                         
                         <div class="product-buttons">
                             <a href="{{ route('product.show', $product->id) }}" class="details-btn">
-                                <i class="fas fa-eye"></i> Voir détails
+                                <i class="fas fa-eye"></i>voir les détails
                             </a>
                             
                             <form action="{{ route('cart.add', $product->id) }}" method="POST" class="add-to-cart-form">
@@ -34,7 +34,7 @@
                                 <div class="quantity-selector">
                                     <input type="number" name="quantity" value="1" min="1" class="quantity-input">
                                     <button type="submit" class="add-to-cart-btn">
-                                        <i class="fas fa-shopping-cart"></i> Ajouter
+                                        <i class="fas fa-shopping-cart"></i>
                                     </button>
                                 </div>
                             </form>
@@ -150,7 +150,7 @@
 
     .product-price {
         font-size: 1.3rem;
-        color: #B3AC9D;
+        color: #333;
         font-weight: 700;
         margin-bottom: 1.5rem;
     }
@@ -167,7 +167,7 @@
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
-        background: #B3AC9D;
+        background: #5885AF;
         color: white;
         padding: 0.6rem;
         border-radius: 5px;
@@ -177,7 +177,7 @@
     }
 
     .details-btn:hover {
-        background: #7A7568;
+        background: #274472;
         color: white;
     }
 
@@ -200,10 +200,6 @@
     }
 
     .add-to-cart-btn {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         gap: 0.5rem;
         background: #4CAF50;
         color: white;
@@ -231,7 +227,7 @@
         }
         
         .quantity-selector {
-            flex-direction: column;
+            flex-direction: row;
         }
         
         .quantity-input {
