@@ -11,7 +11,7 @@ class ProductController extends Controller
     public function index()
     {
         // Récupérer tous les produits
-        $products = Product::all();
+        $products = Product::with('category')->get();
 
         // Passer les produits à la vue
         return view('product.index', compact('products'));
@@ -29,10 +29,10 @@ class ProductController extends Controller
         return view('category.products', compact('category', 'products'));
     }
     public function show($id)
-{
+    {
     $product = Product::findOrFail($id);
     return view('product.show', compact('product'));
-}
+    }
 
 
 
@@ -55,6 +55,7 @@ public function search(Request $request)
     // Retourner la vue avec les produits trouvés ou une collection vide
     return view('products.index', ['searchedProducts' => $searchedProducts]);
 }
+
 }
 
 
