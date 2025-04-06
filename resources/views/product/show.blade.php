@@ -1,142 +1,186 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Tous les Produits</h1>
-
-    <div id="alert-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1100"></div>
-
-    <div class="row">
-        @foreach($products as $product)
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <!-- Image du produit -->
-                @if($product->image)
-                    <img src="{{ $product->image }}" class="card-img-top" 
-                         alt="{{ $product->name }}" style="height: 200px; object-fit: cover;">
-                @else
-                    <div class="bg-light d-flex align-items-center justify-content-center" 
-                         style="height: 200px;">
-                        <i class="fas fa-image fa-3x text-muted"></i>
-                    </div>
-                @endif
-                
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">{{ $product->name }}</h5>
-                    <p class="card-text">{{ Str::limit($product->description, 100) }}</p>
-                    <p class="mt-auto fw-bold">{{ number_format($product->price, 2) }} €</p>
-                    
-                    <form class="add-to-cart-form" action="{{ route('cart.add', $product->id) }}" method="POST">
-                        @csrf
-                        <div class="mb-3">
-                            <select name="color" class="form-select" required>
-                                <option value="">Select Color</option>
-                                @if(is_array($product->colors) || is_object($product->colors))
-                                    @foreach($product->colors as $key => $value)
-                                        <option value="{{ is_array($value) ? ($value['name'] ?? $key) : $value }}">
-                                            {{ is_array($value) ? ($value['name'] ?? $key) : $value }}
-                                        </option>
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
-                        
-                        <div class="d-flex gap-2">
-                            <input type="number" name="quantity" value="1" min="1" 
-                                   max="{{ $product->stock }}" class="form-control" required>
-                            <button type="submit" class="btn btn-success add-to-cart-btn">
-                                <span class="btn-text">Ajouter</span>
-                                <span class="spinner-border spinner-border-sm d-none" role="status"></span>
-                            </button>
-                        </div>
-                    </form>
+<div class="product-detail-container">
+    <div class="product-wrapper">
+        <!-- Image Gallery -->
+        <div class="product-gallery">
+            @if($product->image)
+                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="product-image">
+            @else
+                <div class="image-placeholder">
+                    <i class="fas fa-image"></i>
                 </div>
-            </div>
+            @endif
         </div>
-        @endforeach
+
+        <!-- Product Info -->
+        <div class="product-info">
+            <h1>{{ $product->name }}</h1>
+            <div class="price">{{ number_format($product->price, 2) }} MAD</div>
+            
+            <p class="description">{{ $product->description }}</p>
+
+            <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                @csrf
+                
+                <div class="form-group">
+                    <label>Couleur</label>
+                    <select name="color" required>
+                        @foreach($product->colors as $color)
+                        <option value="{{ $color->id }}" style="background-color: {{ $color->hex_code }}; color: #fff; padding: 8px;">
+                            {{ $color->name }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Quantité</label>
+                    <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" required>
+                </div>
+
+                <button type="submit">
+                    <i class="fas fa-shopping-bag"></i>
+                    Ajouter au panier
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const alertContainer = document.getElementById('alert-container');
-    
-    document.querySelectorAll('.add-to-cart-form').forEach(form => {
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const button = this.querySelector('.add-to-cart-btn');
-            const spinner = button.querySelector('.spinner-border');
-            const btnText = button.querySelector('.btn-text');
-            
-            // Show loading state
-            btnText.textContent = 'Ajout...';
-            spinner.classList.remove('d-none');
-            button.disabled = true;
-            
-            try {
-                const formData = new FormData(this);
-                const response = await fetch(this.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                });
-                
-                const data = await response.json();
-                
-                if (!response.ok) throw new Error(data.message || 'Erreur serveur');
-                
-                // Show success alert
-                showAlert('success', data.message || 'Produit ajouté au panier');
-                
-                // Update cart count if needed
-                if (typeof updateCartCount === 'function') {
-                    updateCartCount(data.cart_count);
-                }
-                
-            } catch (error) {
-                showAlert('danger', error.message || 'Erreur lors de l\'ajout au panier');
-            } finally {
-                // Reset button state
-                btnText.textContent = 'Ajouter';
-                spinner.classList.add('d-none');
-                button.disabled = false;
-            }
-        });
-    });
-    
-    function showAlert(type, message) {
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${type} alert-dismissible fade show`;
-        alert.role = 'alert';
-        alert.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        
-        alertContainer.appendChild(alert);
-        
-        // Auto-dismiss after 3 seconds
-        setTimeout(() => {
-            alert.classList.remove('show');
-            setTimeout(() => alert.remove(), 150);
-        }, 3000);
-    }
-});
-</script>
-
 <style>
-    .add-to-cart-btn {
-        position: relative;
-        min-width: 100px;
+:root {
+    --primary: #2a52be;
+    --primary-dark: #1a3a8a;
+    --accent: #ff4242;
+    --text: #333;
+    --light-bg: #f9f9f9;
+    --border: #e0e0e0;
+}
+
+.product-detail-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.product-wrapper {
+    display: flex;
+    gap: 3rem;
+}
+
+.product-gallery {
+    flex: 1;
+}
+
+.product-image {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.image-placeholder {
+    height: 500px;
+    background: var(--light-bg);
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+}
+
+.image-placeholder i {
+    font-size: 3rem;
+    color: #ccc;
+}
+
+.product-info {
+    flex: 1;
+    padding-top: 1rem;
+}
+
+.product-info h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.price {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ff4242;
+    margin-bottom: 1.5rem;
+}
+
+.description {
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: var(--text);
+}
+
+form {
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+select, input[type="number"] {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    appearance: none;
+}
+
+button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .product-wrapper {
+        flex-direction: column;
+        gap: 2rem;
     }
-    .spinner-border {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
+    
+    .product-image, .image-placeholder {
+        height: 350px;
     }
+}
 </style>
 @endsection
