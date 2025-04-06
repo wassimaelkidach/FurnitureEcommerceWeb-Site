@@ -114,7 +114,7 @@
 
     .empty-state i {
         font-size: 3rem;
-        color: #B3AC9D;
+        color: #274472;
         margin-bottom: 1rem;
     }
 
@@ -196,7 +196,7 @@
 
     .product-price {
         font-size: 1.3rem;
-        color: #B3AC9D;
+        color: #274472;
         font-weight: 700;
         margin-bottom: 1.5rem;
     }
@@ -269,7 +269,7 @@
         display: block;
         width: 100px;
         height: 3px;
-        background: #B3AC9D;
+        background: #274472;
         margin: 0.5rem auto 0;
     }
 

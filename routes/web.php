@@ -53,6 +53,8 @@ Route::middleware(['auth'])->group(function () {
 // Afficher les détails d'un produit
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
 // Lorsqu'un utilisateur accède à /product/{id}, les détails du produit correspondant sont affichés
+
+
 // Dashboard Admin (accessible uniquement aux admins)
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');

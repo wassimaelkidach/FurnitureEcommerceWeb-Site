@@ -51,8 +51,8 @@
 
 <style>
 :root {
-    --primary: #2a52be;
-    --primary-dark: #1a3a8a;
+    --primary: #5885AF;
+    --primary-dark: #274472;
     --accent: #ff4242;
     --text: #333;
     --light-bg: #f9f9f9;
@@ -153,7 +153,7 @@ select {
 }
 
 button {
-    background: var(--primary);
+    background: var(--primary-dark);
     color: white;
     border: none;
     padding: 0.75rem 1.5rem;
