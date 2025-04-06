@@ -1,37 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
-    <!-- Header avec effet de verre (glassmorphism) -->
-    <div class="glass-card p-4 mb-5 rounded-4 shadow">
-        <div class="row align-items-center">
-            <div class="col-md-2 text-center">
+<div class="profile-container">
+    <!-- En-tête du profil -->
+    <div class="profile-header">
+        <div class="profile-header-content">
+            <div class="profile-image-wrapper">
                 @if($user->profile_image)
-                <div class="profile-img-container">
+                <div class="profile-image-container">
                     <img src="{{ asset('storage/' . $user->profile_image) }}" 
-                         class="img-fluid rounded-circle border border-4 border-white shadow" 
                          alt="Photo de profil">
-                    <div class="profile-overlay rounded-circle">
-                        <i class="fas fa-camera text-white"></i>
+                    <div class="profile-image-overlay">
+                        <i class="fas fa-camera"></i>
                     </div>
                 </div>
                 @endif
             </div>
-            <div class="col-md-10">
-                <h1 class="display-5 fw-bold text-primary">{{ $user->name }}</h1>
-                <p class="lead text-muted">
-                    <i class="fas fa-envelope me-2"></i>{{ $user->email }}
+            <div class="profile-info">
+                <h1>{{ $user->name }}</h1>
+                <p class="profile-email">
+                    <i class="fas fa-envelope"></i>{{ $user->email }}
                 </p>
-                <div class="d-flex flex-wrap gap-3">
+                <div class="profile-badges">
                     @if($user->birthday)
-                    <span class="badge bg-light text-dark">
-                        <i class="fas fa-birthday-cake me-1"></i> 
+                    <span class="profile-badge">
+                        <i class="fas fa-birthday-cake"></i> 
                         {{ \Carbon\Carbon::parse($user->birthday)->format('d/m/Y') }}
                     </span>
                     @endif
                     @if($user->phone)
-                    <span class="badge bg-light text-dark">
-                        <i class="fas fa-phone me-1"></i> {{ $user->phone }}
+                    <span class="profile-badge">
+                        <i class="fas fa-phone"></i> {{ $user->phone }}
                     </span>
                     @endif
                 </div>
@@ -40,76 +39,77 @@
     </div>
 
     @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show mb-5" role="alert">
+    <div class="alert-message success">
         {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="alert-close">&times;</button>
     </div>
     @endif
 
-    <div class="row">
+    <div class="profile-content">
         <!-- Section Formulaire -->
-        <div class="col-lg-8 mb-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-header bg-white border-0 py-3 rounded-top-4">
-                    <h3 class="h5 mb-0">
-                        <i class="fas fa-user-edit text-primary me-2"></i>
+        <div class="profile-form-section">
+            <div class="profile-form-card">
+                <div class="form-card-header">
+                    <h3>
+                        <i class="fas fa-user-edit"></i>
                         Modifier le profil
                     </h3>
                 </div>
-                <div class="card-body">
+                <div class="form-card-body">
                     <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="name" class="form-label">Nom complet</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light">
-                                        <i class="fas fa-user text-primary"></i>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="name">Nom complet</label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">
+                                        <i class="fas fa-user"></i>
                                     </span>
-                                    <input type="text" class="form-control" id="name" name="name" 
+                                    <input type="text" id="name" name="name" 
                                            value="{{ old('name', $user->name) }}" required>
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
-                                <label for="birthday" class="form-label">Date de naissance</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light">
-                                        <i class="fas fa-calendar-alt text-primary"></i>
+                            <div class="form-group">
+                                <label for="birthday">Date de naissance</label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">
+                                        <i class="fas fa-calendar-alt"></i>
                                     </span>
-                                    <input type="date" class="form-control" id="birthday" name="birthday" 
+                                    <input type="date" id="birthday" name="birthday" 
                                            value="{{ old('birthday', $user->birthday) }}">
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
-                                <label for="phone" class="form-label">Téléphone</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light">
-                                        <i class="fas fa-phone text-primary"></i>
+                            <div class="form-group">
+                                <label for="phone">Téléphone</label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">
+                                        <i class="fas fa-phone"></i>
                                     </span>
-                                    <input type="text" class="form-control" id="phone" name="phone" 
+                                    <input type="text" id="phone" name="phone" 
                                            value="{{ old('phone', $user->phone) }}">
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
-                                <label for="profile_image" class="form-label">Photo de profil</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light">
-                                        <i class="fas fa-image text-primary"></i>
+                            <div class="form-group">
+                                <label for="profile_image">Photo de profil</label>
+                                <div class="file-input-wrapper">
+                                    <span class="input-icon">
+                                        <i class="fas fa-image"></i>
                                     </span>
-                                    <input type="file" class="form-control" id="profile_image" name="profile_image" accept="image/*">
+                                    <input type="file" id="profile_image" name="profile_image" accept="image/*">
+                                    <span class="file-input-label">Aucun fichier sélectionné</span>
                                 </div>
-                                <small class="text-muted">Formats acceptés: JPG, PNG (max 2MB)</small>
+                                <small>Formats acceptés: JPG, PNG (max 2MB)</small>
                             </div>
                         </div>
 
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                            <button type="submit" class="btn btn-primary px-4 rounded-pill">
-                                <i class="fas fa-save me-2"></i>Enregistrer
+                        <div class="form-actions">
+                            <button type="submit" class="submit-button">
+                                <i class="fas fa-save"></i>Enregistrer
                             </button>
                         </div>
                     </form>
@@ -117,44 +117,40 @@
             </div>
         </div>
 
-        <!-- Section Statistiques (créative) -->
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-header bg-white border-0 py-3 rounded-top-4">
-                    <h3 class="h5 mb-0">
-                        <i class="fas fa-chart-pie text-primary me-2"></i>
+        <!-- Section Statistiques -->
+        <div class="profile-stats-section">
+            <div class="stats-card">
+                <div class="stats-card-header">
+                    <h3>
+                        <i class="fas fa-chart-pie"></i>
                         Activité
                     </h3>
                 </div>
-                <div class="card-body">
-                    <div class="activity-stats">
-                        <div class="stat-item mb-4">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">Membre depuis</span>
-                                <span class="fw-bold">{{ $user->created_at->diffForHumans() }}</span>
+                <div class="stats-card-body">
+                    <div class="stats-content">
+                        <div class="stat-item">
+                            <div class="stat-header">
+                                <span>Membre depuis</span>
+                                <span class="stat-value">{{ $user->created_at->diffForHumans() }}</span>
                             </div>
-                            <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-primary" role="progressbar" 
-                                     style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-
-                        <div class="stat-item mb-4">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">Profil complété</span>
-                                <span class="fw-bold">@php echo rand(70, 95); @endphp%</span>
-                            </div>
-                            <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-success" role="progressbar" 
-                                     style="width: @php echo rand(70, 95); @endphp%" 
-                                     aria-valuenow="@php echo rand(70, 95); @endphp" 
-                                     aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%"></div>
                             </div>
                         </div>
 
-                        <div class="text-center mt-4">
-                            <button class="btn btn-outline-primary rounded-pill px-4">
-                                <i class="fas fa-history me-2"></i>Voir l'historique
+                        <div class="stat-item">
+                            <div class="stat-header">
+                                <span>Profil complété</span>
+                                <span class="stat-value">@php echo rand(70, 95); @endphp%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: @php echo rand(70, 95); @endphp%"></div>
+                            </div>
+                        </div>
+
+                        <div class="stats-footer">
+                            <button class="history-button">
+                                <i class="fas fa-history"></i>Voir l'historique
                             </button>
                         </div>
                     </div>
@@ -165,53 +161,471 @@
 </div>
 
 <style>
-    .glass-card {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background-image: linear-gradient(to right, #f8f9fa, #e9f5ff);
+    /* Variables */
+    :root {
+        --primary-color: #3498db;
+        --secondary-color: #2980b9;
+        --success-color: #2ecc71;
+        --light-color: #ecf0f1;
+        --dark-color: #2c3e50;
+        --text-color: #333;
+        --text-muted: #7f8c8d;
+        --border-radius: 8px;
+        --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
     }
-    
-    .profile-img-container {
-        position: relative;
-        width: fit-content;
+
+    /* Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: #f5f7fa;
+    }
+
+    .profile-container {
+        max-width: 1200px;
         margin: 0 auto;
+        padding: 20px;
     }
-    
-    .profile-overlay {
+
+    /* Profile Header */
+    .profile-header {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: var(--box-shadow);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .profile-header-content {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .profile-image-wrapper {
+        flex: 0 0 120px;
+    }
+
+    .profile-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .profile-image-container {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        overflow: hidden;
+        position: relative;
+        margin: 0 auto;
+        border: 4px solid white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition);
+    }
+
+    .profile-image-overlay {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.3);
+        background: rgba(52, 152, 219, 0.7);
         display: flex;
         align-items: center;
         justify-content: center;
+        color: white;
         opacity: 0;
-        transition: opacity 0.3s;
+        transition: var(--transition);
     }
-    
-    .profile-img-container:hover .profile-overlay {
+
+    .profile-image-container:hover .profile-image-overlay {
         opacity: 1;
     }
-    
-    .card {
-        transition: transform 0.3s, box-shadow 0.3s;
+
+    .profile-image-container:hover img {
+        transform: scale(1.1);
     }
-    
-    .card:hover {
+
+    .profile-info h1 {
+        font-size: 2.2rem;
+        color: var(--dark-color);
+        margin-bottom: 10px;
+    }
+
+    .profile-email {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        margin-bottom: 15px;
+    }
+
+    .profile-email i {
+        margin-right: 8px;
+    }
+
+    .profile-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .profile-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        background: var(--light-color);
+        border-radius: 20px;
+        font-size: 0.9rem;
+        color: var(--dark-color);
+    }
+
+    .profile-badge i {
+        margin-right: 5px;
+    }
+
+    /* Alert Message */
+    .alert-message {
+        padding: 15px;
+        border-radius: var(--border-radius);
+        margin-bottom: 30px;
+        position: relative;
+    }
+
+    .alert-message.success {
+        background: rgba(46, 204, 113, 0.2);
+        border: 1px solid var(--success-color);
+        color: #27ae60;
+    }
+
+    .alert-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: var(--text-muted);
+    }
+
+    /* Profile Content */
+    .profile-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+
+    .profile-form-section {
+        flex: 2;
+        min-width: 0;
+    }
+
+    .profile-stats-section {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* Form Card */
+    .profile-form-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        transition: var(--transition);
+    }
+
+    .profile-form-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
-    
+
+    .form-card-header {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .form-card-header h3 {
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-card-body {
+        padding: 20px;
+    }
+
+    /* Form Grid */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .input-wrapper {
+        display: flex;
+        margin-bottom: 15px;
+    }
+
+    .input-icon {
+        padding: 10px 15px;
+        background: var(--light-color);
+        border: 1px solid #ddd;
+        border-right: none;
+        border-radius: var(--border-radius) 0 0 var(--border-radius);
+        color: var(--text-muted);
+    }
+
+    .input-wrapper input {
+        flex: 1;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-left: none;
+        border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        font-size: 1rem;
+    }
+
+    .input-wrapper input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+
+    /* File Input */
+    .file-input-wrapper {
+        position: relative;
+        display: flex;
+        margin-bottom: 15px;
+    }
+
+    .file-input-wrapper input[type="file"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .file-input-label {
+        flex: 1;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-left: none;
+        border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        background: white;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .form-group small {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+
+    .submit-button {
+        padding: 10px 25px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .submit-button:hover {
+        background: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(41, 128, 185, 0.3);
+    }
+
+    /* Stats Card */
+    .stats-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: var(--box-shadow);
+        height: 100%;
+    }
+
+    .stats-card-header {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .stats-card-header h3 {
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .stats-card-body {
+        padding: 20px;
+    }
+
     .stat-item {
-        padding: 0 10px;
+        margin-bottom: 20px;
     }
-    
-    .rounded-4 {
-        border-radius: 1rem !important;
+
+    .stat-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    .stat-value {
+        font-weight: 600;
+    }
+
+    .progress-bar {
+        height: 6px;
+        background: var(--light-color);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+        border-radius: 3px;
+        transition: width 0.6s ease;
+    }
+
+    .stats-footer {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .history-button {
+        padding: 8px 20px;
+        background: transparent;
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
+        border-radius: 50px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .history-button:hover {
+        background: rgba(52, 152, 219, 0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .profile-content {
+            flex-direction: column;
+        }
+        
+        .profile-form-section,
+        .profile-stats-section {
+            flex: 1 1 100%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .profile-header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .profile-badges {
+            justify-content: center;
+        }
+        
+        .profile-image-wrapper {
+            flex: 0 0 auto;
+        }
+        
+        .profile-info h1 {
+            font-size: 1.8rem;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .profile-header {
+            padding: 20px;
+        }
+        
+        .profile-image-container {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .input-wrapper,
+        .file-input-wrapper {
+            flex-direction: column;
+        }
+        
+        .input-icon {
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-right: 1px solid #ddd;
+            border-bottom: none;
+        }
+        
+        .input-wrapper input {
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            border-left: 1px solid #ddd;
+            border-top: none;
+        }
+        
+        .file-input-label {
+            border-left: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+        }
     }
 </style>
+
+<script>
+    document.getElementById('profile_image').addEventListener('change', function(e) {
+        const fileName = e.target.files[0] ? e.target.files[0].name : 'Aucun fichier sélectionné';
+        document.querySelector('.file-input-label').textContent = fileName;
+    });
+</script>
 @endsection
