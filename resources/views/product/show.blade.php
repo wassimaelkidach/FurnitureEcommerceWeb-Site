@@ -12,6 +12,10 @@
                     <i class="fas fa-image"></i>
                 </div>
             @endif
+
+            <div class="img-supp">
+                
+            </div>
         </div>
 
         <!-- Product Info -->
@@ -46,6 +50,46 @@
                 </button>
             </form>
         </div>
+    </div>
+
+
+    <!-- Section des avis -->
+    <div class="mt-4">
+        <h3>Avis des clients :</h3>
+
+        <!-- Affichage des avis existants -->
+        @foreach($product->reviews as $review)
+            <div class="review-box border p-3 my-2">
+                <strong>{{ $review->user->name }}</strong> - ⭐{{ $review->rating }}/5
+                <p>{{ $review->comment }}</p>
+                <small>Posté le {{ $review->created_at->format('d/m/Y') }}</small>
+            </div>
+        @endforeach
+
+        <!-- Formulaire d'ajout d'un avis -->
+        @auth
+            <div class="mt-3">
+                <h4>Laisser un avis :</h4>
+                <form action="{{ route('reviews.store', $product->id) }}" method="POST">
+                    @csrf
+                    <label for="rating">Note :</label>
+                    <select name="rating" required class="form-control w-25">
+                        <option value="5">⭐️⭐️⭐️⭐️⭐️</option>
+                        <option value="4">⭐️⭐️⭐️⭐️</option>
+                        <option value="3">⭐️⭐️⭐️</option>
+                        <option value="2">⭐️⭐️</option>
+                        <option value="1">⭐️</option>
+                    </select>
+
+                    <label for="comment" class="mt-2">Votre avis :</label>
+                    <textarea name="comment" class="form-control" rows="3" required></textarea>
+
+                    <button type="submit" class="btn btn-primary mt-2">Soumettre</button>
+                </form>
+            </div>
+        @else
+            <p><a href="{{ route('login') }}">Connectez-vous</a> pour laisser un avis.</p>
+        @endauth
     </div>
 </div>
 
@@ -181,6 +225,95 @@ button:hover {
     .product-image, .image-placeholder {
         height: 350px;
     }
+}
+
+/* Section des avis */
+.review-box {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+.review-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.review-box strong {
+    font-size: 1.1rem;
+    color: var(--primary);
+}
+
+.review-box p {
+    margin: 0.5rem 0;
+    color: var(--text);
+    line-height: 1.5;
+}
+
+.review-box small {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+/* Formulaire d'avis */
+.mt-4 h3 {
+    margin-top: 20px;
+    font-size: 1.5rem;
+    color: var(--primary-dark);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.mt-3 h4 {
+    font-size: 1.25rem;
+    color: var(--primary-dark);
+    margin-bottom: 1rem;
+}
+
+.form-control {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(88, 133, 175, 0.2);
+}
+
+.btn-primary {
+    background-color: var(--primary-dark;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+/* Lien de connexion */
+.mt-4 a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.mt-4 a:hover {
+    text-decoration: underline;
+    color: var(--primary-dark);
 }
 </style>
 @endsection

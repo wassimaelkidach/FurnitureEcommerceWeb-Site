@@ -15,6 +15,8 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaypalController;
+
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -92,7 +94,28 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Afficher les détails d'un produit spécifique (optionnel)
     Route::get('products/{product}', [AdminProductController::class, 'show'])->name('products.show');
+    
 });
+
+//paiments d'admin 
+
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // Categories
+    Route::resource('categories', AdminCategoryController::class)->except(['show']);
+    
+    // Products
+    Route::resource('products', AdminProductController::class);
+    
+    // Payments
+    Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/{payment}', [\App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('payments.show');
+    Route::put('/payments/{payment}', [\App\Http\Controllers\Admin\PaymentController::class, 'update'])->name('payments.update');
+});
+
+
 // Route pour afficher tous les produits
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
@@ -109,6 +132,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.applyCoupon');
     Route::delete('/cart/coupon', [CartController::class, 'removeCoupon'])->name('cart.removeCoupon');
     Route::patch('/cart/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update');
+    Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 });
 // favoris
 
@@ -123,4 +147,38 @@ Route::middleware(['auth'])->group(function () {
   //  Session::forget(['coupon', 'discounts']);
     //return redirect()->back()->with('success', 'Coupon session data cleared!');});
 
-    //orders
+
+
+//paypal
+ 
+    Route::middleware(['web'])->group(function () {
+        // PayPal Payment Processing
+        Route::post('/paypal/process', [PayPalController::class, 'processPayment'])
+            ->name('paypal.process');
+        
+        // PayPal Return URLs
+        Route::get('/paypal/success', [PayPalController::class, 'handleSuccess'])
+            ->name('paypal.success');
+        
+        Route::get('/paypal/cancel', [PayPalController::class, 'handleCancel'])
+            ->name('paypal.cancel');
+        
+        // Order Confirmation
+        Route::get('/order/confirmation/{order}', function ($order) {
+            return view('order.confirmation', [
+                'order' => $order,
+                'success' => session('success')
+            ]);
+        })->name('order.confirmation');
+        
+        Route::get('/checkout/payment', function () {
+            return view('payment.form'
+            );
+        })->name('payment.form');
+        
+        // Error Page
+        Route::get('/payment/error', function () {
+            return view('payment.error')->with('error', session('error'));
+        })->name('payment.error');
+    });
+

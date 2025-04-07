@@ -18,8 +18,12 @@ return new class extends Migration
             $table->decimal('discount')->default(0); 
             $table->decimal('tax'); 
             $table->decimal('total'); 
+            
+            // Customer information
             $table->string('name'); 
             $table->string('phone'); 
+            
+            // Address information
             $table->string('locality'); 
             $table->text('address'); 
             $table->string('city'); 
@@ -28,14 +32,25 @@ return new class extends Migration
             $table->string('landmark')->nullable(); 
             $table->string('zip'); 
             $table->string('type')->default('home'); 
+            
+            // Payment information
+            $table->string('payment_method'); // stripe, paypal, klarna, etc.
+            $table->string('payment_status')->default('pending'); // pending, completed, failed
+            $table->string('transaction_id')->nullable(); // Payment gateway transaction ID
+            $table->text('payment_details')->nullable(); // JSON response from payment gateway
+            
+            // Order status
             $table->enum('status', ['ordered', 'delivered', 'canceled'])->default('ordered'); 
             $table->boolean('is_shipping_different')->default(false); 
             $table->date('delivered_date')->nullable(); 
             $table->date('canceled_date')->nullable(); 
             $table->timestamps(); 
+            
+            // Foreign key
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); 
         });
     }
+
     /**
      * Reverse the migrations.
      */

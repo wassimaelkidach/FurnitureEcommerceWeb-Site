@@ -125,6 +125,12 @@ nav ul {
         <nav>
                 <h1 class="logo">dwira style</h1>
                 <ul>
+                <li><a href="{{ route('home') }}">Accueil</a></li>
+                <li><a href="{{ route('products.index') }}"><i class=""></i> Produits</a></li>
+
+                <li><a href="{{ route('cart.index') }}"><i class="fas fa-shopping-cart"></i> </a></li>
+                <li><a href="{{ route('favorites.index') }}"><i class="fas fa-heart"></i> Favoris</a></li>
+
                 @guest
                 <li><a href="{{ route('login') }}">Se connecter</a></li>
                 @else
@@ -134,12 +140,7 @@ nav ul {
                 @csrf
                 </form>
                 @endguest
-                <li><a href="{{ route('home') }}">Accueil</a></li>
-                <li><a href="{{ route('products.index') }}"><i class=""></i> Produits</a></li>
-
-                <li><a href="{{ route('cart.index') }}"><i class="fas fa-shopping-cart"></i> Panier</a></li>
-                <li><a href="{{ route('favorites.index') }}"><i class="fas fa-heart"></i> Favoris</a></li>
-
+             
             </ul>
 
         </nav>
