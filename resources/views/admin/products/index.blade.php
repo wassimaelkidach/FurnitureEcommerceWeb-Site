@@ -3,21 +3,13 @@
 @section('title', 'Gestion des Produits')
 
 @php
-    // Définition de la fonction helper directement dans la vue
     if (!function_exists('getContrastColor')) {
         function getContrastColor($hexColor) {
-            // Supprime le # si présent
             $hexColor = ltrim($hexColor, '#');
-            
-            // Convertit en valeurs RGB
             $r = hexdec(substr($hexColor, 0, 2));
             $g = hexdec(substr($hexColor, 2, 2));
             $b = hexdec(substr($hexColor, 4, 2));
-            
-            // Calcul de la luminosité (formule W3C)
             $brightness = ($r * 299 + $g * 587 + $b * 114) / 1000;
-            
-            // Retourne noir ou blanc selon la luminosité
             return $brightness > 128 ? '#000000' : '#FFFFFF';
         }
     }
@@ -25,41 +17,50 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <!-- Alertes -->
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show mb-4">
-            <i class="fas fa-check-circle me-2"></i>
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show mb-4">
-            <i class="fas fa-exclamation-circle me-2"></i>
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-        </div>
-    @endif
-
-    <!-- En-tête -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
         <h1 class="h3 mb-0 text-gray-800">
             <i class="fas fa-shopping-basket"></i> Gestion des Produits
         </h1>
         <a href="{{ route('admin.products.create') }}" class="btn btn-primary shadow-sm">
-            <i class="fas fa-plus-circle me-1"></i> Nouveau Produit
-        </a>
-    </div>
+                <i class="fas fa-plus-circle me-1"></i> Nouveau Produit
+            </a>
+            </div>
+  
+            <div class="card shadow-lg">
+        <!-- Barre de recherche -->
+        <div class="card-header bg-white border-bottom-0 py-4">
+            <form action="{{ route('admin.products.index') }}" method="GET">
+                <div class="input-group">
+                    <input type="text" 
+                           name="search" 
+                           class="form-control rounded-pill" 
+                           placeholder="Rechercher une produit..." 
+                           value="{{ request('search') }}"
+                           aria-label="Rechercher">
+                    <button class="btn btn-primary rounded-pill ms-2 px-4" type="submit">
+                        <i class="fas fa-search me-1"></i> Rechercher
+                    </button>
+                    @if(request('search'))
+                        <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary rounded-pill ms-2">
+                            <i class="fas fa-times me-1"></i> Annuler
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
 
-    <!-- Carte Principale -->
-    <div class="card shadow-lg border-0 rounded-lg overflow-hidden">
-        <div class="card-body p-0">
+        <div class="card-body px-0 pb-0">
+            @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show mx-4 rounded-3" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+    
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light">
                         <tr>
-                            <!-- <th class="ps-4">ID</th> -->
                             <th>Image</th>
                             <th>Nom</th>
                             <th>Description</th>
@@ -74,7 +75,6 @@
                     <tbody>
                         @forelse ($products as $product)
                         <tr>
-                            <!-- <td class="ps-4 fw-semibold">#{{ $product->id }}</td> -->
                             <td>
                                 @if($product->image)
                                 <img src="{{ asset('storage/' . $product->image) }}" 
@@ -151,6 +151,12 @@
                             <td colspan="9" class="text-center py-5">
                                 <i class="fas fa-box-open text-muted" style="font-size: 3rem;"></i>
                                 <h5 class="mt-3">Aucun produit trouvé</h5>
+                                @if(request('search'))
+                                    <p class="text-muted">Aucun résultat pour "{{ request('search') }}"</p>
+                                    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary mt-2">
+                                        <i class="fas fa-arrow-left me-1"></i> Retour à la liste
+                                    </a>
+                                @endif
                                 <a href="{{ route('admin.products.create') }}" class="btn btn-primary mt-3">
                                     <i class="fas fa-plus-circle me-1"></i> Ajouter un Produit
                                 </a>
@@ -162,18 +168,16 @@
             </div>
         </div>
         
-        <!-- Pagination -->
         <div class="card-footer bg-white border-top-0 py-3">
             <div class="d-flex justify-content-center">
                 @if(method_exists($products, 'links'))
-                {{ $products->links() }}
+                {{ $products->appends(['search' => request('search')])->links() }}
                 @endif
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Zoom Image -->
 <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -219,7 +223,6 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Gestion du modal d'image
         const imageModal = document.getElementById('imageModal');
         if (imageModal) {
             imageModal.addEventListener('show.bs.modal', function(event) {
