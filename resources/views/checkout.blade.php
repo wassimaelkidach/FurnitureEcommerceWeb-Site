@@ -610,7 +610,7 @@ body {
                         <div class="col-md-6">
                             <div class="form-floating my-3">
                                 <input type="text" class="form-control" name="name" id="name" required 
-                                       value="{{ old('name', auth()->user()->name ?? '') }}" placeholder="Nom complet *">
+                                       value="{{ old('name', auth()->user()->name ?? 'No Name Provided') }}" placeholder="Nom complet *">
                                 
                             </div>
                         </div>
@@ -739,7 +739,7 @@ body {
                                 </tr>
                                 <tr>
                                     <th>TVA</th>
-                                    <td>{{ number_format($vat, 2) }} MAD</td>
+                                    <td>{{ number_format($tax, 2) }} MAD</td>
                                 </tr>
                                 <tr class="total-row">
                                     <th>Total</th>
