@@ -29,6 +29,7 @@ class PayPalController extends Controller
         $tax = $subtotal * 0.08;
         $total = $subtotal + $shipping + $tax;
 
+
         // Store order data in session
         session([
             'order_data' => [
@@ -141,20 +142,16 @@ class PayPalController extends Controller
         if (isset($response['status']) && $response['status'] === 'COMPLETED') {
             $order = Order::create([
                 'user_id' => $orderData['user_id'],
-                'subtotal' => $orderData['subtotal'],
-                'discount' => $orderData['discount'],
-                'tax' => $orderData['tax'],
-                'total' => $orderData['total'],
-                'name' => $orderData['name'],
+                'name' => $orderData['name'], // Make sure this is included
                 'phone' => $orderData['phone'],
-                'locality' => $orderData['locality'],
                 'address' => $orderData['address'],
                 'city' => $orderData['city'],
                 'state' => $orderData['state'],
                 'country' => $orderData['country'],
-                'landmark' => $orderData['landmark'],
                 'zip' => $orderData['zip'],
-                'type' => $orderData['type'],
+                'subtotal' => $orderData['subtotal'],
+                'tax' => $orderData['tax'],
+                'total' => $orderData['total'],
                 'payment_method' => 'paypal',
                 'payment_status' => 'completed',
                 'transaction_id' => $response['id'],
