@@ -54,16 +54,35 @@
 
         <!-- Orders Card -->
         <div class="col-md-4">
+    
             <div class="card border-start border-warning border-4 h-100 hover-shadow">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="card-title text-muted mb-2">COMMANDES</h5>
-                            <h2 class="mb-0 text-warning">10</h2>
+                            <h2 class="mb-0 text-warning">{{ $stats['pending_orders'] }}</h2>
                             <small class="text-muted">En attente</small>
                         </div>
                         <div class="bg-warning bg-opacity-10 p-3 rounded">
                             <i class="fas fa-shopping-cart fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Payments Card -->
+        <div class="col-md-4">
+            <div class="card border-start border-success border-4 h-100 hover-shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title text-muted mb-2">PAIEMENTS</h5>
+                            <h2 class="mb-0 text-success">{{ $stats['completed_payments'] }}</h2>
+                            <small class="text-muted">Validés</small>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-credit-card fa-2x text-success"></i>
                         </div>
                     </div>
                 </div>
@@ -86,6 +105,33 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Recent Paid Orders Section -->
+<div class="col-md-6 mb-4">
+    <div class="card h-100 shadow-sm">
+        <div class="card-header bg-white border-0 py-3">
+            <h5 class="mb-0"><i class="fas fa-check-circle me-2 text-success"></i> Derniers Paiements</h5>
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                @foreach($recentPayments as $payment)
+                <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0">
+                    <div>
+                        <span class="badge bg-success me-2">Payé</span>
+                        <span>Commande #{{ $payment->order_id }} - {{ number_format($payment->amount, 2) }}€</span>
+                    </div>
+                    <small class="text-muted">{{ $payment->created_at->diffForHumans() }}</small>
+                </li>
+                @endforeach
+            </ul>
+            <a href="{{ route('admin.payments.index') }}" class="btn btn-sm btn-success mt-3">
+                Voir tous les paiements
+            </a>
+        </div>
+    </div>
+</div>
+
 
     <!-- Recent Activity -->
     <div class="row">
@@ -153,7 +199,6 @@
 
 @section('styles')
 <style>
-/* Custom Bootstrap enhancements */
 .hover-shadow {
     transition: all 0.3s ease;
 }
