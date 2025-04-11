@@ -13,10 +13,29 @@
             <i class="fas fa-plus-circle me-1"></i> Nouveau categories
         </a>
     </div>
-<!-- <div class="card-header bg-white border-bottom-0 py-4"> -->
-           
+
     <div class="card shadow-lg">
-        
+        <!-- Barre de recherche -->
+        <div class="card-header bg-white border-bottom-0 py-4">
+            <form action="{{ route('admin.categories.index') }}" method="GET">
+                <div class="input-group">
+                    <input type="text" 
+                           name="search" 
+                           class="form-control rounded-pill" 
+                           placeholder="Rechercher une catégorie..." 
+                           value="{{ request('search') }}"
+                           aria-label="Rechercher">
+                    <button class="btn btn-primary rounded-pill ms-2 px-4" type="submit">
+                        <i class="fas fa-search me-1"></i> Rechercher
+                    </button>
+                    @if(request('search'))
+                        <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-secondary rounded-pill ms-2">
+                            <i class="fas fa-times me-1"></i> Annuler
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
 
         <div class="card-body px-0 pb-0">
             @if(session('success'))
@@ -85,7 +104,13 @@
                             <td colspan="4" class="text-center py-5">
                                 <i class="bi bi-folder-x text-muted" style="font-size: 3rem;"></i>
                                 <h5 class="mt-3">Aucune catégorie trouvée</h5>
-                                <p class="text-muted">Commencez par ajouter votre première catégorie</p>
+                                <p class="text-muted">
+                                    @if(request('search'))
+                                        Aucun résultat pour "{{ request('search') }}"
+                                    @else
+                                        Commencez par ajouter votre première catégorie
+                                    @endif
+                                </p>
                                 <a href="{{ route('admin.categories.create') }}" class="btn btn-primary mt-2">
                                     <i class="bi bi-plus-circle me-1"></i> Ajouter une catégorie
                                 </a>
@@ -97,12 +122,12 @@
             </div>
         </div>
         
-        <!-- Pagination (seulement si vous utilisez paginate() dans le contrôleur) -->
+        <!-- Pagination -->
         @isset($categories->links)
-<div class="card-footer bg-white border-top-0 py-3">
-    {{ $categories->links() }}
-</div>
-@endisset
+        <div class="card-footer bg-white border-top-0 py-3">
+            {{ $categories->links() }}
+        </div>
+        @endisset
     </div>
 </div>
 @endsection
@@ -118,19 +143,24 @@
     })
 </script>
 @endsection
+
 @section('styles')
 <style>
     /* Styles globaux améliorés */
     .pagination {
-    justify-content: center;
-}
-.pagination .page-item.active .page-link {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
-.pagination .page-link {
-    margin: 0 5px;
-    border-radius: 50%;
-}
+        justify-content: center;
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    .pagination .page-link {
+        margin: 0 5px;
+        border-radius: 50%;
+    }
+    /* Style pour la barre de recherche */
+    .input-group {
+        max-width: 500px;
+    }
 </style>
 @endsection
