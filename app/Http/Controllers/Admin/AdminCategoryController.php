@@ -38,7 +38,14 @@ class AdminCategoryController extends Controller
 
     public function index()
     {
-        $categories = Category::withCount('products')->paginate(10);
+        $search = request('search');
+        
+        $categories = Category::withCount('products')
+            ->when($search, function($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->paginate(10);
+        
         return view('admin.categories.index', compact('categories'));
     }
 
