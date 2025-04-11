@@ -2,7 +2,33 @@
 
 @section('content')
 <div class="products-page">
-    <h1>Tous les Produits</h1>
+<div class="products-container">
+        <!-- Sidebar -->
+        <aside class="products-sidebar">
+            <div class="sidebar-section">
+                <h3>CATEGORIES</h3>
+                <ul class="categories-list">
+                    @foreach($categories as $category)
+                    <li>
+                        <a href="{{ route('category.products', $category->id) }}">{{ $category->name }}</a>
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>COULEURS</h3>
+                <div class="color-filters">
+                    @foreach($colors as $color)
+                    <div class="color-option">
+                        <input type="checkbox" id="color-{{ $color->id }}" name="colors[]" value="{{ $color->id }}">
+                        <label for="color-{{ $color->id }}" style="background-color: {{ $color->hex_code }}"></label>
+                        <span>{{ $color->name }}</span>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </aside>
 
     <!-- Messages d'alerte -->
     @if(session('success'))
@@ -17,6 +43,12 @@
         </div>
     @endif
 
+    <!-- Image statique en haut des produits -->
+    <div class="content">
+    <div class="featured-banner">
+        <img src="{{ asset('images/banner (1).png') }}" alt="Promotion spéciale" class="banner-image">
+    </div>
+
     <div class="products-grid">
         @foreach($products as $product)
         <div class="product">
@@ -26,6 +58,10 @@
                      loading="lazy">
             </div>
             <div class="details">
+
+                <div class="price">{{ number_format($product->price, 2) }} MAD</div>
+                <br>
+
                 <h1>{{ $product->name }}</h1>
                 @if($product->category)
                     <span> Category: {{ $product->category->name }}</span>
@@ -33,7 +69,7 @@
                     <span class="category-name">No category assigned</span>
                 @endif
 
-                <div class="price">{{ number_format($product->price, 2) }} MAD</div>
+                
                 
                 <form action="{{ route('cart.add', $product->id) }}" method="POST">
                     @csrf
@@ -54,7 +90,7 @@
                     <select name="color" id="color-{{ $product->id }}" class="color-select" required>
                         <option value="">Choisir une couleur</option>
                         @foreach($product->colors as $color)
-                        <option value="{{$color->name}}" style="background-color: {{ $color->hex_code }};">{{ $color->name }}</option>
+                        <option value="{{$color->name}}" style="background-color: {{ $color->hex_code }}">{{ $color->name }}</option>
                         @endforeach
                     </select>
                     @endif
@@ -68,6 +104,8 @@
         </div>
         @endforeach
     </div>
+    </div>
+</div>
 </div>
 @endsection
 
@@ -78,7 +116,144 @@ body {
     background: white;
     font-family: Arial, Helvetica, sans-serif;
 }
+/* Structure principale */
+.products-container {
+    display: flex;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
+.products-sidebar {
+    flex: 0 0 250px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+}
+
+.products-main-content {
+    flex: 1;
+}
+
+/* Style des sections de la sidebar */
+.sidebar-section {
+    margin-bottom: 30px;
+}
+
+.sidebar-section h3 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: #333;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Liste des catégories */
+.categories-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.categories-list li {
+    margin-bottom: 8px;
+}
+
+.categories-list a {
+    color: #555;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+    display: block;
+    padding: 5px 0;
+}
+
+.categories-list a:hover {
+    color: #04456f;
+    font-weight: 500;
+}
+
+/* Filtres de couleur */
+.color-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.color-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-option input[type="checkbox"] {
+    display: none;
+}
+
+.color-option label {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    transition: transform 0.2s;
+}
+
+.color-option input[type="checkbox"]:checked + label {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 2px #fff, 0 0 0 3px #04456f;
+}
+
+.color-option span {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* Bannière promotionnelle */
+.featured-banner {
+    width: 100%;
+    height: fit-content;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.banner-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.featured-banner:hover .banner-image {
+    transform: scale(1.02);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .products-container {
+        flex-direction: column;
+    }
+    
+    .products-sidebar {
+        flex: 1;
+        width: 100%;
+        position: static;
+        margin-bottom: 30px;
+    }
+    
+    .featured-banner {
+        margin-bottom: 20px;
+    }
+}
 .products-page {
     max-width: 1200px;
     margin: 0 auto;
@@ -134,15 +309,16 @@ body {
 
 .product .imgbox img {
     display: block;
-    width: 90%;
-    max-height: 80%;
+    width: 100%;
+    max-height: 100%;
     object-fit: contain;
+    border-radius: 20px;
 }
 
 .details {
     position: absolute;
     width: 100%;
-    bottom: -200px;
+    bottom: -250px;
     background: white;
     padding: 15px;
     box-sizing: border-box;
