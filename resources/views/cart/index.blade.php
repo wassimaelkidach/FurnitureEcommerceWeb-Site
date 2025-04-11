@@ -428,7 +428,7 @@ a{
 </style>
 
 <div class="panier-container">
-    <h2 class="page-title">Livraison et Paiement</h2>
+    <h2 class="page-title">Panier</h2>
     <div class="checkout-steps">
         <a href="{{ route('cart.index') }}" class="checkout-steps__item active">
             <span class="checkout-steps__item-number">01</span>
@@ -539,9 +539,6 @@ a{
         <!-- Colonne du total -->
         <div class="recapitulatif">
             <div class="card1">
-                <div class="card1-header">
-                    <h2>Récapitulatif</h2>
-                </div>
                 
                 <div class="card1-body">
                     <form action="{{ route('cart.applyCoupon') }}" method="POST" class="form-coupon">
