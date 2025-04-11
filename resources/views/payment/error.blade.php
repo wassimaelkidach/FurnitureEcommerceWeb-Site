@@ -105,18 +105,18 @@
 
 <div class="payment-error-container">
     <div class="payment-error-card">
-        <div class="payment-error-header">Payment Error</div>
+        <div class="payment-error-header">Erreur de Paiement</div>
 
         <div class="payment-error-body">
             <div class="alert alert-danger">
-                An error occurred during the payment process.
+                Une erreur est survenue lors du processus de paiement.
             </div>
             <p class="payment-error-message">
-                {{ session('error') ?? 'Something went wrong with your payment. Please try again or contact support if the problem persists.' }}
+                {{ session('error') ?? 'Un problème est survenu avec votre paiement. Veuillez réessayer ou contacter le support si le problème persiste.' }}
             </p>
             <div class="button-group">
-                <a href="{{ route('paypal.process') }}" class="btn btn-primary">Try Again</a>
-                <a href="/" class="btn btn-secondary">Return to Home</a>
+                <a href="{{ route('paypal.process') }}" class="btn btn-primary">Réessayer</a>
+                <a href="/" class="btn btn-secondary">Retour à l'accueil</a>
             </div>
         </div>
     </div>

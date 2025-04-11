@@ -67,8 +67,7 @@ class CartController extends Controller
             ]
         );
 
-        return redirect()->route('cart.index')->with('success', 'Product added to cart!');
-    }
+        return back()->with('success', 'Produit ajouté au panier');    }
 
     public function removeFromCart(CartItem $cartItem)
     {
@@ -128,20 +127,23 @@ public function updateQuantity(Request $request, CartItem $cartItem)
 
 public function checkout()
 {
+    $user = auth()->user();
+    $cartItems = CartItem::with('product')->where('user_id', $user->id)->get();
 
-    // Récupérer les produits du panier de l'utilisateur connecté
-    $cartItems = CartItem::with(['product', 'color'])
-    ->where('user_id', Auth::id())
-    ->get();
-    $subtotal = $cartItems->sum(function ($item) {
-        return $item->price * $item->quantity;
+    if ($cartItems->isEmpty()) {
+        return redirect()->route('cart.index')->with('error', 'Votre panier est vide');
+    }
+
+    // Calcul des totaux
+    $subtotal = $cartItems->sum(function($item) {
+        return $item->quantity * $item->product->price;
     });
+    
+    $shipping = 10; // Frais de livraison fixes
+    $tax = $subtotal * 0.08; // Taxe de 8%
+    $total = $subtotal + $shipping + $tax;
 
-    $shipping = 10.00;
-    $vat = $subtotal * 0.2; // TVA de 20%
-    $total = $subtotal + $shipping + $vat;
-
-    return view('checkout', compact('cartItems', 'subtotal', 'shipping', 'vat', 'total'));
+    return view('checkout', compact('cartItems', 'subtotal', 'shipping', 'tax', 'total'));
 }
 
 }

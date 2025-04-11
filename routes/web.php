@@ -14,7 +14,7 @@ use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FavoriteController;
-use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\PaypalController;
 
 
@@ -110,7 +110,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('products', AdminProductController::class);
     
     // Payments
-    Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
+    Route::resource('payments', PaymentController::class)->except(['create', 'destroy']);    Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
     Route::get('/payments/{payment}', [\App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('payments.show');
     Route::put('/payments/{payment}', [\App\Http\Controllers\Admin\PaymentController::class, 'update'])->name('payments.update');
 });
@@ -143,9 +143,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Clear coupon session data 
-//Route::get('/clear-coupon-session', function() {
-  //  Session::forget(['coupon', 'discounts']);
-    //return redirect()->back()->with('success', 'Coupon session data cleared!');});
+Route::get('/clear-coupon-session', function() {
+  Session::forget(['coupon', 'discounts']);
+  return redirect()->back()->with('success', 'Coupon session data cleared!');});
 
 
 
@@ -182,3 +182,13 @@ Route::middleware(['auth'])->group(function () {
         })->name('payment.error');
     });
 
+
+    /*search*/
+    Route::get('/search', [ProductController::class, 'search'])->name('products.search');
+
+    Route::get('/about-us', function () {
+        return view('layouts.aboutus');
+    })->name('aboutus');
+    Route::get('/contact', function () {
+        return view('layouts.contact');
+    })->name('contact');

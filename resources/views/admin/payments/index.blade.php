@@ -23,8 +23,8 @@
                 @foreach($payments as $payment)
                 <tr>
                     <td>#{{ $payment->id }}</td>
-                    <td>Commande #{{ $payment->order_id }}</td>
-                    <td>{{ number_format($payment->amount, 2) }} €</td>
+                    <td>Commande #{{ $payment->order->id ?? 'N/A' }}</td>
+                    <td>{{ number_format($payment->amount, 2) }} MAD</td>
                     <td>{{ ucfirst($payment->payment_method) }}</td>
                     <td>
                         <span class="badge bg-{{ $payment->status === 'completed' ? 'success' : ($payment->status === 'failed' ? 'danger' : 'warning') }}">
