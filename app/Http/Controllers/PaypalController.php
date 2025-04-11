@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Payment;
 use App\Models\Cart;
 use App\Models\CartItem;
 use Srmklive\PayPal\Services\PayPal;
@@ -124,60 +125,73 @@ class PayPalController extends Controller
     }
     
     public function handleSuccess(Request $request)
-    {
-        $provider = new PayPal;
-        $provider->setApiCredentials(config('paypal'));
-        $paypalToken = $provider->getAccessToken();
-        
-        $paypalOrderId = session('paypal_transaction_id');
-        $orderData = session('order_data');
-        
-        if (empty($paypalOrderId) || empty($orderData)) {
-            return redirect()->route('cart.index')
-                ->with('error', 'Session data missing');
-        }
+{
+    $provider = new PayPal;
+    $provider->setApiCredentials(config('paypal'));
+    $paypalToken = $provider->getAccessToken();
     
-        $response = $provider->capturePaymentOrder($request->token);
-
-        if (isset($response['status']) && $response['status'] === 'COMPLETED') {
-            $order = Order::create([
-                'user_id' => $orderData['user_id'],
-                'name' => $orderData['name'], // Make sure this is included
-                'phone' => $orderData['phone'],
-                'address' => $orderData['address'],
-                'city' => $orderData['city'],
-                'state' => $orderData['state'],
-                'country' => $orderData['country'],
-                'zip' => $orderData['zip'],
-                'subtotal' => $orderData['subtotal'],
-                'tax' => $orderData['tax'],
-                'total' => $orderData['total'],
-                'payment_method' => 'paypal',
-                'payment_status' => 'completed',
-                'transaction_id' => $response['id'],
-                'payment_details' => json_encode($response),
-                'status' => 'ordered'
-            ]);
+    $paypalOrderId = session('paypal_transaction_id');
+    $orderData = session('order_data');
     
-            foreach ($orderData['cart_items'] as $item) {
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $item['product_id'],
-                    'quantity' => $item['quantity'],
-                    'price' => $item['price']
-                ]);
-            }
-    
-            CartItem::where('user_id', $orderData['user_id'])->delete();
-            session()->forget(['paypal_transaction_id', 'order_data']);
-    
-            return redirect()->route('order.confirmation', ['order' => $order->id])
-                ->with('success', 'Payment completed successfully!');
-        }
-        
-        return redirect()->route('payment.error')
-            ->with('error', 'Payment failed or could not be verified');
+    if (empty($paypalOrderId) || empty($orderData)) {
+        return redirect()->route('cart.index')
+            ->with('error', 'Session data missing');
     }
+
+    $response = $provider->capturePaymentOrder($request->token);
+
+    if (isset($response['status']) && $response['status'] === 'COMPLETED') {
+        // Create the order
+        $order = Order::create([
+            'user_id' => $orderData['user_id'],
+            'name' => $orderData['name'],
+            'phone' => $orderData['phone'],
+            'address' => $orderData['address'],
+            'city' => $orderData['city'],
+            'state' => $orderData['state'],
+            'country' => $orderData['country'],
+            'zip' => $orderData['zip'],
+            'subtotal' => $orderData['subtotal'],
+            'tax' => $orderData['tax'],
+            'total' => $orderData['total'],
+            'payment_method' => 'paypal',
+            'payment_status' => 'completed',
+            'transaction_id' => $response['id'],
+            'payment_details' => json_encode($response),
+            'status' => 'ordered'
+        ]);
+
+        // Create order items
+        foreach ($orderData['cart_items'] as $item) {
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity'],
+                'price' => $item['price']
+            ]);
+        }
+
+        // Create a payment record
+        Payment::create([
+            'order_id' => $order->id,
+            'amount' => $orderData['total'],
+            'payment_method' => 'paypal',
+            'transaction_id' => $response['id'],
+            'status' => 'completed',
+            'notes' => 'Payment completed via PayPal'
+        ]);
+
+        // Clear cart and session data
+        CartItem::where('user_id', $orderData['user_id'])->delete();
+        session()->forget(['paypal_transaction_id', 'order_data']);
+
+        return redirect()->route('order.confirmation', ['order' => $order->id])
+            ->with('success', 'Payment completed successfully!');
+    }
+    
+    return redirect()->route('payment.error')
+        ->with('error', 'Payment failed or could not be verified');
+}
     
     public function handleCancel()
     {
