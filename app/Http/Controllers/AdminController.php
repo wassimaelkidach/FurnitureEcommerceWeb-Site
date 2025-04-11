@@ -3,15 +3,38 @@
 namespace App\Http\Controllers;
 use App\Models\Coupon;
 use App\Models\Order;
-
+use App\Http\Controllers\Controller;
+use App\Models\User;          
+use App\Models\Product;       
+use App\Models\Payment;       
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
-        return view('admin.dashboard');
+    $stats = [
+        'users' => User::count(),
+        'products' => Product::count(),
+        'pending_orders' => Order::where('status', 'pending')->count(),
+        'completed_payments' => Payment::where('status', 'completed')->count()
+    ];
+
+    $recentOrders = Order::with('payment')
+                        ->latest()
+                        ->take(5)
+                        ->get();
+
+    $recentPayments = Payment::with('order')
+                            ->where('status', 'completed')
+                            ->latest()
+                            ->take(5)
+                            ->get();
+
+    return view('admin.dashboard', compact('stats', 'recentOrders', 'recentPayments'));
     }
+
+
     public function coupons(Request $request)
 {
     $query = Coupon::query()
